@@ -6,10 +6,13 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.jamesisaac.rnbackgroundtask.BackgroundTaskPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
@@ -59,7 +62,10 @@ public class MainApplication extends Application implements ReactApplication {
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     BackgroundTaskPackage.useContext(this);
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======

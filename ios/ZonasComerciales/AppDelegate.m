@@ -14,8 +14,11 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #import <RNCPushNotificationIOS.h>
 
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
@@ -56,6 +59,7 @@ static void InitializeFlipper(UIApplication *application) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Required to register for notifications
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
@@ -83,6 +87,8 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
   [RNCPushNotificationIOS didReceiveLocalNotification:notification];
 }
 
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
