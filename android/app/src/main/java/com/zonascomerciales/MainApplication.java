@@ -5,10 +5,13 @@ import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.jamesisaac.rnbackgroundtask.BackgroundTaskPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -55,7 +58,10 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 <<<<<<< HEAD
+<<<<<<< HEAD
     BackgroundTaskPackage.useContext(this);
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
   }

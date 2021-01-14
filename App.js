@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { StyleSheet, TouchableOpacity, View, Text, Button } from 'react-native';
+=======
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
@@ -10,6 +14,7 @@ import { WebView } from 'react-native-webview';
 import { BackHandler } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { Icon } from 'react-native-elements'
+<<<<<<< HEAD
 <<<<<<< HEAD
 import NotificationService from './NotificationService';
 import BackgroundTask from 'react-native-background-task'
@@ -359,10 +364,15 @@ class HomeScreen extends Component {
   _isMounted = false;
   WEBVIEW_REF = "disoft"
 =======
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 
 class HomeScreen extends Component { 
 
   WEBVIEW_REF = "zca"
+<<<<<<< HEAD
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
+=======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
   map="https://admin.dicloud.es/zca/mapa.html"
   idm="10162"
@@ -378,6 +388,7 @@ class HomeScreen extends Component {
 
   constructor(props) {
     super(props);
+<<<<<<< HEAD
 <<<<<<< HEAD
     /*setInterval(() => {
       this.setLocation()
@@ -470,6 +481,8 @@ class HomeScreen extends Component {
   SOS = () =>{
     this.props.navigation.navigate('SOS')
 =======
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
     this.state = {
       url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng
     }
@@ -487,6 +500,9 @@ class HomeScreen extends Component {
 
   SOS = ()=>{
     alert("OBTENER SOS")
+<<<<<<< HEAD
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
+=======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
   }
   
@@ -504,11 +520,15 @@ class HomeScreen extends Component {
 
   goHelp = () => {
 <<<<<<< HEAD
+<<<<<<< HEAD
     this.props.navigation.navigate('Help')
   }
 
   goOffers = () => {
     this.props.navigation.navigate('Offers')
+=======
+    this.setState({ url: "https://admin.dicloud.es/zca/tutorial/index.html" })
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
     this.setState({ url: "https://admin.dicloud.es/zca/tutorial/index.html" })
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
@@ -518,9 +538,12 @@ class HomeScreen extends Component {
     return(
       <View style={{flex: 1}}>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <View style={styles.navBar}>
           <Text style={styles.navBarHeader}>Zona Guanarteme</Text>
         </View>
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
         <WebView
@@ -544,7 +567,11 @@ class HomeScreen extends Component {
         />
        <View style={styles.navBar}>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+=======
+        <TouchableOpacity onPress={this.SOS} style={styles.navBarButton}>
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
         <TouchableOpacity onPress={this.SOS} style={styles.navBarButton}>
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
@@ -556,7 +583,10 @@ class HomeScreen extends Component {
           color='#FFFFFF'
           size={30}
 <<<<<<< HEAD
+<<<<<<< HEAD
           onPress={this.goOffers}
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
         />
@@ -564,7 +594,11 @@ class HomeScreen extends Component {
           name='tag'
           type='evilicon'
 <<<<<<< HEAD
+<<<<<<< HEAD
           color='#B0B359'
+=======
+          color='#a9c54c'
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
           color='#a9c54c'
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
@@ -581,7 +615,11 @@ class HomeScreen extends Component {
           name='tag'
           type='evilicon'
 <<<<<<< HEAD
+<<<<<<< HEAD
           color='#B0B359'
+=======
+          color='#a9c54c'
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
           color='#a9c54c'
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
@@ -597,6 +635,7 @@ class HomeScreen extends Component {
           name='tag'
           type='evilicon'
 <<<<<<< HEAD
+<<<<<<< HEAD
           color='#B0B359'
           size={30}
         />
@@ -607,6 +646,8 @@ class HomeScreen extends Component {
           size={30}
           onPress={this.goHelp}
 =======
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
           color='#a9c54c'
           size={30}
         />
@@ -615,6 +656,9 @@ class HomeScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
+<<<<<<< HEAD
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
+=======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
         />
         </View>
@@ -627,6 +671,7 @@ const AppNavigator = createStackNavigator({
   Home: {
     screen: HomeScreen,
     navigationOptions: {
+<<<<<<< HEAD
 <<<<<<< HEAD
       header: null,
       animationEnabled: false
@@ -654,6 +699,9 @@ const AppNavigator = createStackNavigator({
 =======
       header: null
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
+=======
+      header: null
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
     }
   }
 });
@@ -671,7 +719,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
 <<<<<<< HEAD
+<<<<<<< HEAD
     backgroundColor:"#B0B359", 
+=======
+    backgroundColor:"#a9c54c", 
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
     backgroundColor:"#a9c54c", 
 >>>>>>> 0f0dc98... Map has been added to HomeScreen

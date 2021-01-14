@@ -13,10 +13,13 @@ target 'ZonasComerciales' do
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
 
   pod 'RNBackgroundFetch', :path => '../node_modules/react-native-background-fetch'
 
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
   target 'ZonasComercialesTests' do
