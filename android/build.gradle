@@ -32,7 +32,10 @@ allprojects {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         maven { url "$rootDir/../node_modules/react-native-background-fetch/android/libs" }
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
