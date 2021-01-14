@@ -1,3 +1,7 @@
 <resources>
+<<<<<<< HEAD
     <string name="app_name">Zonas Comerciales</string>
+=======
+    <string name="app_name">ZonasComerciales</string>
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 </resources>
