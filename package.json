@@ -17,7 +17,10 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@react-native-community/push-notification-ios": "^1.8.0",
+=======
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
 >>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
@@ -35,12 +38,18 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "react-native-background-fetch": "^3.1.0",
     "react-native-background-task": "^0.2.1",
     "react-native-elements": "^3.1.0",
     "react-native-gesture-handler": "^1.9.0",
     "react-native-paper": "^4.6.0",
     "react-native-push-notification": "^7.0.0",
+=======
+    "react-native-elements": "^3.1.0",
+    "react-native-gesture-handler": "^1.9.0",
+    "react-native-paper": "^4.6.0",
+>>>>>>> 0f0dc98... Map has been added to HomeScreen
 =======
     "react-native-elements": "^3.1.0",
     "react-native-gesture-handler": "^1.9.0",
