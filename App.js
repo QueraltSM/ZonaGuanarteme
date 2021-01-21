@@ -1,15 +1,128 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Button } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { WebView } from 'react-native-webview';
 import { BackHandler } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { Icon } from 'react-native-elements'
+import NotificationService from './NotificationService';
+import BackgroundTask from 'react-native-background-task'
+import BackgroundFetch from 'react-native-background-fetch';
+import PushNotification from 'react-native-push-notification';
+
+class SOSScreen extends Component { 
+
+  WEBVIEW_REF = "sos"
+  webView = {
+    canGoBack: false,
+    ref: null,
+  }
+  state = {
+    url: "https://admin.dicloud.es/zca/sos/index.asp"
+  }
+
+  constructor(props) {
+    super(props);
+  }
+
+  goHome = () => {
+    this.props.navigation.navigate('Home')
+  }
+
+  reloadSOS = () => {
+    this.setState({ url: "https://admin.dicloud.es/zca/sos/index.asp" })
+  }
+
+  render(){
+    return(
+      <View style={{flex: 1}}>
+        <View style={styles.navBar}>
+          <Text style={styles.navBarHeader}>Todos los SOS</Text>
+          <Icon
+          name='plus'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.addSOS}
+        />
+        </View>
+        <WebView
+          ref={(webView) => { this.webView.ref = webView; }}
+          originWhitelist={['*']}
+          source={{ uri: this.state.url }}
+          startInLoadingState={true}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          setSupportMultipleWindows={false}
+          allowsBackForwardNavigationGestures
+          onNavigationStateChange={(navState) => {
+            this.setState({
+              canGoBack: navState.canGoBack
+            });
+          }}
+          onShouldStartLoadWithRequest={(event) => {
+            this.setState({ url: event.url })  
+            return true 
+          }}
+        />
+       <View style={styles.navBar}>
+        <TouchableOpacity onPress={this.reloadSOS} style={styles.navBarButton}>
+          <Text style={styles.navBarHeader}>SOS</Text>
+        </TouchableOpacity>
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+       <Icon
+          name='location'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goHome}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+        <Icon
+          name='bell'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+        <Icon
+          name='gear'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+        />
+        </View>
+    </View>
+    )
+  }
+}
 
 class HomeScreen extends Component { 
 
-  WEBVIEW_REF = "zca"
+  _isMounted = false;
+  WEBVIEW_REF = "disoft"
   map="https://admin.dicloud.es/zca/mapa.html"
   idm="10162"
   lat=28.13598034627975
@@ -24,23 +137,92 @@ class HomeScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng
-    }
+    /*setInterval(() => {
+      this.setLocation()
+    }, 60000);*/
+  }
+
+  configNotifications = () => {
+    console.log("config - Notifications")
+      PushNotification.configure({
+        onNotification: notification => console.log(notification),
+        permissions: {
+          alert: true,
+          badge: true,
+          sound: true,
+        },
+        requestPermissions: Platform.OS === 'ios',
+        popInitialNotification: true,
+      });
+      PushNotification.createChannel({
+        channelId: "channel-id", // (required)
+        channelName: "My channel", // (required)
+        channelDescription: "A channel to categorise your notifications", // (optional) default: undefined.
+        playSound: false, // (optional) default: true
+        soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+        importance: 4, // (optional) default: 4. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+      },
+      (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+    this.setBackgroundFetch()
+  }
+
+  setBackgroundFetch = () => {
+    console.log("setBackgroundFetch")
+    BackgroundFetch.configure({
+      minimumFetchInterval: 15, // fetch interval in minutes
+      enableHeadless: true,
+      stopOnTerminate: false,
+      periodic: true,
+    },
+    async taskId => {
+      console.log('Received background-fetch event: ', taskId);
+      // 3. Insert code you want to run in the background, for example:
+      this.pushNotification()
+      // Call finish upon completion of the background task
+      BackgroundFetch.finish(taskId);
+    },
+    error => {
+      console.error('RNBackgroundFetch failed to start.');
+      },
+    );
+  }
+
+  pushNotification = () => {
+    console.log("NOTIFICACION!!!!!")
+    PushNotification.localNotification({
+      title: 'Zonas Comerciales',
+      message:'Aviso',
+      playSound: true,
+      soundName: 'default',
+      channelId: "channel-id", 
+    });
+  }
+
+  componentDidMount(){
+    console.log("componentDidMount")
+    this._isMounted = true
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng})
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.setLocation()
-  } 
+    this.configNotifications()
+  }
 
   setLocation = () => {
-    Geolocation.getCurrentPosition(info => {
-      this.lat=info.coords.latitude
-      this.lng=info.coords.longitude
+    console.log(this._isMounted)
+    if (this._isMounted) {
       this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
-    });
+      Geolocation.getCurrentPosition(info => {
+        this.lat=info.coords.latitude
+        this.lng=info.coords.longitude
+        this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
+      });
+    } 
  }
 
   SOS = ()=>{
-    alert("OBTENER SOS")
+    this.props.navigation.navigate('SOS')
   }
   
   handleBackButton = ()=>{
@@ -62,6 +244,9 @@ class HomeScreen extends Component {
   render(){
     return(
       <View style={{flex: 1}}>
+        <View style={styles.navBar}>
+          <Text style={styles.navBarHeader}>Zona Guanarteme</Text>
+        </View>
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
           originWhitelist={['*']}
@@ -94,7 +279,7 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#B0B359'
           size={30}
         />
        <Icon
@@ -107,7 +292,7 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#B0B359'
           size={30}
         />
         <Icon
@@ -119,7 +304,7 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#B0B359'
           size={30}
         />
         <Icon
@@ -140,6 +325,12 @@ const AppNavigator = createStackNavigator({
     navigationOptions: {
       header: null
     }
+  },
+  SOS: {
+    screen: SOSScreen,
+    navigationOptions: {
+      header: null
+    }
   }
 });
 
@@ -155,7 +346,7 @@ const styles = StyleSheet.create({
   navBar: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor:"#a9c54c", 
+    backgroundColor:"#B0B359", 
     flexDirection:'row', 
     textAlignVertical: 'center',
     height: 50

@@ -4,6 +4,10 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
+import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
+import com.jamesisaac.rnbackgroundtask.BackgroundTaskPackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnativecommunity.geolocation.GeolocationPackage;
 import com.facebook.react.ReactInstanceManager;
@@ -47,6 +51,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    BackgroundTaskPackage.useContext(this);
   }
 
   /**

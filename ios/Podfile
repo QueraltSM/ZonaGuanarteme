@@ -12,6 +12,10 @@ target 'ZonasComerciales' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
+
+  pod 'RNBackgroundFetch', :path => '../node_modules/react-native-background-fetch'
+
   target 'ZonasComercialesTests' do
     inherit! :complete
     # Pods for testing
