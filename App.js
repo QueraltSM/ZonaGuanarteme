@@ -11,6 +11,117 @@ import BackgroundTask from 'react-native-background-task'
 import BackgroundFetch from 'react-native-background-fetch';
 import PushNotification from 'react-native-push-notification';
 
+class HelpScreen extends Component { 
+
+  WEBVIEW_REF = "sos"
+  webView = {
+    canGoBack: false,
+    ref: null,
+  }
+  state = {
+    url: "https://admin.dicloud.es/zca/ayuda.html"
+  }
+
+  constructor(props) {
+    super(props);
+  }
+
+  goHome = () => {
+    this.props.navigation.navigate('Home')
+  }
+
+  goHelp = () => {
+    this.setState({ url: "https://admin.dicloud.es/zca/ayuda.html" })
+ }
+
+  reloadSOS = () => {
+    this.setState({ url: "https://admin.dicloud.es/zca/sos/index.asp" })
+  }
+
+  addSOS = () => {
+    this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
+  }
+
+  render(){
+    return(
+      <View style={{flex: 1}}>
+        <View style={styles.navBar}>
+          <Text style={styles.navBarHeader}>Ayuda</Text>
+        </View>
+        <WebView
+          ref={(webView) => { this.webView.ref = webView; }}
+          originWhitelist={['*']}
+          source={{ uri: this.state.url }}
+          startInLoadingState={true}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          setSupportMultipleWindows={false}
+          allowsBackForwardNavigationGestures
+          onNavigationStateChange={(navState) => {
+            this.setState({
+              canGoBack: navState.canGoBack
+            });
+          }}
+          onShouldStartLoadWithRequest={(event) => {
+            this.setState({ url: event.url })  
+            return true 
+          }}
+        />
+       <View style={styles.navBar}>
+        <TouchableOpacity onPress={this.reloadSOS} style={styles.navBarButton}>
+          <Text style={styles.navBarHeader}>SOS</Text>
+        </TouchableOpacity>
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+       <Icon
+          name='location'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goHome}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+        <Icon
+          name='bell'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+        <Icon
+          name='help'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goHelp}
+        />
+        </View>
+    </View>
+    )
+  }
+}
+
+
 class SOSScreen extends Component { 
 
   WEBVIEW_REF = "sos"
@@ -30,15 +141,23 @@ class SOSScreen extends Component {
     this.props.navigation.navigate('Home')
   }
 
+  goHelp = () => {
+    this.props.navigation.navigate('Help')
+ }
+
   reloadSOS = () => {
     this.setState({ url: "https://admin.dicloud.es/zca/sos/index.asp" })
+  }
+
+  addSOS = () => {
+    this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
   }
 
   render(){
     return(
       <View style={{flex: 1}}>
         <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>Todos los SOS</Text>
+          <Text style={styles.navBarHeader}>SOS</Text>
           <Icon
           name='plus'
           type='evilicon'
@@ -108,10 +227,11 @@ class SOSScreen extends Component {
           size={30}
         />
         <Icon
-          name='gear'
+          name='help'
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goHelp}
         />
         </View>
     </View>
@@ -221,7 +341,11 @@ class HomeScreen extends Component {
     } 
  }
 
-  SOS = ()=>{
+ goSOS = () => {
+  this.props.navigation.navigate('SOS')
+ }
+
+  SOS = () =>{
     this.props.navigation.navigate('SOS')
   }
   
@@ -238,7 +362,7 @@ class HomeScreen extends Component {
   }
 
   goHelp = () => {
-    this.setState({ url: "https://admin.dicloud.es/zca/tutorial/index.html" })
+    this.props.navigation.navigate('Help')
   }
 
   render(){
@@ -267,7 +391,7 @@ class HomeScreen extends Component {
           }}
         />
        <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.SOS} style={styles.navBarButton}>
+        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
           <Text style={styles.navBarHeader}>SOS</Text>
         </TouchableOpacity>
         <Icon
@@ -308,10 +432,11 @@ class HomeScreen extends Component {
           size={30}
         />
         <Icon
-          name='gear'
+          name='help'
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goHelp}
         />
         </View>
     </View>
@@ -328,6 +453,12 @@ const AppNavigator = createStackNavigator({
   },
   SOS: {
     screen: SOSScreen,
+    navigationOptions: {
+      header: null
+    }
+  },
+  Help: {
+    screen: HelpScreen,
     navigationOptions: {
       header: null
     }
