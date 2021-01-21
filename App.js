@@ -11,6 +11,117 @@ import BackgroundTask from 'react-native-background-task'
 import BackgroundFetch from 'react-native-background-fetch';
 import PushNotification from 'react-native-push-notification';
 
+class OffersScreen extends Component { 
+
+  WEBVIEW_REF = "sos"
+  webView = {
+    canGoBack: false,
+    ref: null,
+  }
+  state = {
+    url: "https://admin.dicloud.es/zca/ofertas/index.asp"
+  }
+
+  constructor(props) {
+    super(props);
+  }
+
+  goHome = () => {
+    this.props.navigation.navigate('Home')
+  }
+
+  goHelp = () => {
+    this.props.navigation.navigate('Help')
+ }
+
+  goSOS = () => {
+    this.props.navigation.navigate('SOS')
+  }
+
+  goOffers = () => {
+    this.props.navigation.navigate('Offers')
+  }
+
+  render(){
+    return(
+      <View style={{flex: 1}}>
+        <View style={styles.navBar}>
+          <Text style={styles.navBarHeader}>Ofertas</Text>
+        </View>
+        <WebView
+          ref={(webView) => { this.webView.ref = webView; }}
+          originWhitelist={['*']}
+          source={{ uri: this.state.url }}
+          startInLoadingState={true}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          setSupportMultipleWindows={false}
+          allowsBackForwardNavigationGestures
+          onNavigationStateChange={(navState) => {
+            this.setState({
+              canGoBack: navState.canGoBack
+            });
+          }}
+          onShouldStartLoadWithRequest={(event) => {
+            this.setState({ url: event.url })  
+            return true 
+          }}
+        />
+       <View style={styles.navBar}>
+        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+          <Text style={styles.navBarHeader}>SOS</Text>
+        </TouchableOpacity>
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goOffers} 
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+       <Icon
+          name='location'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goHome}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+        <Icon
+          name='bell'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#B0B359'
+          size={30}
+        />
+        <Icon
+          name='help'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goHelp}
+        />
+        </View>
+    </View>
+    )
+  }
+}
+
 class HelpScreen extends Component { 
 
   WEBVIEW_REF = "sos"
@@ -31,15 +142,15 @@ class HelpScreen extends Component {
   }
 
   goHelp = () => {
-    this.setState({ url: "https://admin.dicloud.es/zca/ayuda.html" })
+    this.props.navigation.navigate('Help')
  }
 
-  reloadSOS = () => {
-    this.setState({ url: "https://admin.dicloud.es/zca/sos/index.asp" })
+  goSOS = () => {
+    this.props.navigation.navigate('SOS')
   }
 
-  addSOS = () => {
-    this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
+  goOffers = () => {
+    this.props.navigation.navigate('Offers')
   }
 
   render(){
@@ -68,7 +179,7 @@ class HelpScreen extends Component {
           }}
         />
        <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.reloadSOS} style={styles.navBarButton}>
+        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
           <Text style={styles.navBarHeader}>SOS</Text>
         </TouchableOpacity>
         <Icon
@@ -76,6 +187,7 @@ class HelpScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goOffers} 
         />
         <Icon
           name='tag'
@@ -146,7 +258,11 @@ class SOSScreen extends Component {
  }
 
   reloadSOS = () => {
-    this.setState({ url: "https://admin.dicloud.es/zca/sos/index.asp" })
+    this.props.navigation.navigate('SOS')
+  }
+
+  goOffers = () => {
+    this.props.navigation.navigate('Offers')
   }
 
   addSOS = () => {
@@ -158,13 +274,6 @@ class SOSScreen extends Component {
       <View style={{flex: 1}}>
         <View style={styles.navBar}>
           <Text style={styles.navBarHeader}>SOS</Text>
-          <Icon
-          name='plus'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.addSOS}
-        />
         </View>
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
@@ -194,6 +303,7 @@ class SOSScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goOffers}
         />
         <Icon
           name='tag'
@@ -365,6 +475,10 @@ class HomeScreen extends Component {
     this.props.navigation.navigate('Help')
   }
 
+  goOffers = () => {
+    this.props.navigation.navigate('Offers')
+  }
+
   render(){
     return(
       <View style={{flex: 1}}>
@@ -399,6 +513,7 @@ class HomeScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goOffers}
         />
         <Icon
           name='tag'
@@ -448,19 +563,29 @@ const AppNavigator = createStackNavigator({
   Home: {
     screen: HomeScreen,
     navigationOptions: {
-      header: null
+      header: null,
+      animationEnabled: false
     }
   },
   SOS: {
     screen: SOSScreen,
     navigationOptions: {
-      header: null
+      header: null,
+      animationEnabled: false
     }
   },
   Help: {
     screen: HelpScreen,
     navigationOptions: {
-      header: null
+      header: null,
+      animationEnabled: false
+    }
+  },
+  Offers: {
+    screen: OffersScreen,
+    navigationOptions: {
+      header: null,
+      animationEnabled: false
     }
   }
 });
