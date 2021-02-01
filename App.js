@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Button } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Linking } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { WebView } from 'react-native-webview';
@@ -24,6 +24,18 @@ class OffersScreen extends Component {
 
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton = ()=>{
+    if (this.state.canGoBack) {
+      this.webView.ref.goBack();
+      return true;
+    }
+    return true;
   }
 
   goHome = () => {
@@ -63,8 +75,17 @@ class OffersScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            this.setState({ url: event.url })  
-            return true 
+            if (event.url.includes("drive") || event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
+              Linking.canOpenURL(event.url).then((value) => {
+                if (value) {
+                  Linking.openURL(event.url)
+                }
+              })
+              return false
+            } else {
+              this.setState({ url: event.url })  
+              return true 
+            }
           }}
         />
        <View style={styles.navBar}>
@@ -81,7 +102,7 @@ class OffersScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
        <Icon
@@ -94,7 +115,7 @@ class OffersScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
         <Icon
@@ -106,7 +127,7 @@ class OffersScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
         <Icon
@@ -135,6 +156,18 @@ class HelpScreen extends Component {
 
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton = ()=>{
+    if (this.state.canGoBack) {
+      this.webView.ref.goBack();
+      return true;
+    }
+    return true;
   }
 
   goHome = () => {
@@ -192,7 +225,7 @@ class HelpScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
        <Icon
@@ -205,7 +238,7 @@ class HelpScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
         <Icon
@@ -217,7 +250,7 @@ class HelpScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
         <Icon
@@ -247,6 +280,18 @@ class SOSScreen extends Component {
 
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton = ()=>{
+    if (this.state.canGoBack) {
+      this.webView.ref.goBack();
+      return true;
+    }
+    return true;
   }
 
   goHome = () => {
@@ -290,8 +335,17 @@ class SOSScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            this.setState({ url: event.url })  
-            return true 
+            if (event.url.includes("drive") || event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
+              Linking.canOpenURL(event.url).then((value) => {
+                if (value) {
+                  Linking.openURL(event.url)
+                }
+              })
+              return false
+            } else {
+              this.setState({ url: event.url })  
+              return true 
+            }
           }}
         />
        <View style={styles.navBar}>
@@ -308,7 +362,7 @@ class SOSScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
        <Icon
@@ -321,7 +375,7 @@ class SOSScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
         <Icon
@@ -333,7 +387,7 @@ class SOSScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
         <Icon
@@ -436,7 +490,7 @@ class HomeScreen extends Component {
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng})
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.setLocation()
-    this.configNotifications()
+    //this.configNotifications()
   }
 
   setLocation = () => {
@@ -518,8 +572,17 @@ class HomeScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            this.setState({ url: event.url })  
-            return true 
+            if (event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
+              Linking.canOpenURL(event.url).then((value) => {
+                if (value) {
+                  Linking.openURL(event.url)
+                }
+              })
+              return false
+            } else {
+              this.setState({ url: event.url })  
+              return true 
+            }
           }}
         />
        <View style={styles.navBar}>
@@ -536,7 +599,7 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
        <Icon
@@ -561,7 +624,7 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#B0B359'
+          color='#a9c54c'
           size={30}
         />
         <Icon
@@ -628,7 +691,6 @@ const styles = StyleSheet.create({
   navBar: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor:"#B0B359",
     backgroundColor:"#a9c54c", 
     flexDirection:'row', 
     textAlignVertical: 'center',
