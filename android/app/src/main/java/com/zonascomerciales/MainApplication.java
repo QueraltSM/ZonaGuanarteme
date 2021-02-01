@@ -4,27 +4,16 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactnativecommunity.geolocation.GeolocationPackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.jamesisaac.rnbackgroundtask.BackgroundTaskPackage;
+import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.jamesisaac.rnbackgroundtask.BackgroundTaskPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
 import com.oblador.vectoricons.VectorIconsPackage;
-import com.reactnativecommunity.geolocation.GeolocationPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -66,22 +55,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     BackgroundTaskPackage.useContext(this);
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
   }
 
   /**

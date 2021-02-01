@@ -121,22 +121,6 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
@@ -150,22 +134,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         multiDexEnabled true
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
     }
     splits {
         abi {
@@ -215,24 +184,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
     implementation 'com.android.support:multidex:1.0.3' //enter the latest version
-
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
-=======
->>>>>>> 0f0dc98... Map has been added to HomeScreen
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
