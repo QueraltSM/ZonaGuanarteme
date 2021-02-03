@@ -75,7 +75,7 @@ class OffersScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("drive") || event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
+            if (event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
@@ -102,7 +102,7 @@ class OffersScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
        <Icon
@@ -115,7 +115,7 @@ class OffersScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
         <Icon
@@ -127,11 +127,11 @@ class OffersScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
         <Icon
-          name='help'
+          name='gear'
           type='evilicon'
           color='#FFFFFF'
           size={30}
@@ -225,7 +225,7 @@ class HelpScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
        <Icon
@@ -238,7 +238,7 @@ class HelpScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
         <Icon
@@ -250,7 +250,7 @@ class HelpScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
         <Icon
@@ -335,7 +335,7 @@ class SOSScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("drive") || event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
+            if (event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
@@ -362,7 +362,7 @@ class SOSScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
        <Icon
@@ -375,7 +375,7 @@ class SOSScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
         <Icon
@@ -387,11 +387,11 @@ class SOSScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
         <Icon
-          name='help'
+          name='gear'
           type='evilicon'
           color='#FFFFFF'
           size={30}
@@ -421,9 +421,34 @@ class HomeScreen extends Component {
 
   constructor(props) {
     super(props);
+    this.getSOS()
     /*setInterval(() => {
       this.setLocation()
     }, 60000);*/
+  }
+
+  getSOS() {
+    fetch('https://app.dicloud.es/getSOS.asp', {})
+    .then((response) => response.json())
+    .then((responseJson) => {
+      console.log(responseJson.sos.length)
+      responseJson.sos.forEach(sos => {
+        if (sos.id < 14800) { // 14774 = sesion storage last
+          // con este si peta 14800
+          console.log("tengo que notificar: " + sos.id + " ==== " + 14774)
+          //this.pushNotification("¡¡¡SOS!!!", sos.title_es)
+        }
+      });
+      /*let error = JSON.stringify(responseJson.error_code)
+      if (error == 0) {
+        let fullname = JSON.parse(JSON.stringify(responseJson.fullName))
+        let token = JSON.parse(JSON.stringify(responseJson.token))
+        let idempresa = JSON.parse(JSON.stringify(responseJson.idempresa))
+        this.goHome(alias,user,pass,fullname,idempresa,token)
+      } else {
+        this.handleError(error)
+      }*/
+    }).catch(() => {});
   }
 
   configNotifications = () => {
@@ -462,9 +487,7 @@ class HomeScreen extends Component {
     },
     async taskId => {
       console.log('Received background-fetch event: ', taskId);
-      // 3. Insert code you want to run in the background, for example:
-      this.pushNotification()
-      // Call finish upon completion of the background task
+      this.getSOS()
       BackgroundFetch.finish(taskId);
     },
     error => {
@@ -473,11 +496,11 @@ class HomeScreen extends Component {
     );
   }
 
-  pushNotification = () => {
+  pushNotification = (title, message) => {
     console.log("NOTIFICACION!!!!!")
     PushNotification.localNotification({
-      title: 'Zonas Comerciales',
-      message:'Aviso',
+      title: title,
+      message: message,
       playSound: true,
       soundName: 'default',
       channelId: "channel-id", 
@@ -490,7 +513,7 @@ class HomeScreen extends Component {
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng})
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.setLocation()
-    //this.configNotifications()
+    this.configNotifications()
   }
 
   setLocation = () => {
@@ -544,11 +567,6 @@ class HomeScreen extends Component {
 
   goOffers = () => {
     this.props.navigation.navigate('Offers')
-    this.setState({ url: "https://admin.dicloud.es/zca/tutorial/index.html" })
-    this.setState({ url: "https://admin.dicloud.es/zca/tutorial/index.html" })
-    this.setState({ url: "https://admin.dicloud.es/zca/tutorial/index.html" })
-    this.setState({ url: "https://admin.dicloud.es/zca/tutorial/index.html" })
-    this.setState({ url: "https://admin.dicloud.es/zca/tutorial/index.html" })
   }
 
   render(){
@@ -599,7 +617,7 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
        <Icon
@@ -612,7 +630,7 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
         <Icon
@@ -624,16 +642,7 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#a9c54c'
-          size={30}
-        />
-        <Icon
-          name='help'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHelp}
-          color='#a9c54c'
+          color='#1A5276'
           size={30}
         />
         <Icon
@@ -691,7 +700,7 @@ const styles = StyleSheet.create({
   navBar: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor:"#a9c54c", 
+    backgroundColor:"#1A5276", 
     flexDirection:'row', 
     textAlignVertical: 'center',
     height: 50
