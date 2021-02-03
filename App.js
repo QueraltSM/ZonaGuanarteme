@@ -414,6 +414,7 @@ class HomeScreen extends Component {
   lat=28.13598034627975
   lng=-15.436172595513227
   sos_id=0
+  ofertas_id=0
   webView = {
     canGoBack: false,
     ref: null,
@@ -424,7 +425,8 @@ class HomeScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.getSOS()
+    this.getSOS();
+    this.getOfertas();
     /*setInterval(() => {
       this.setLocation()
     }, 60000);*/
@@ -446,7 +448,7 @@ class HomeScreen extends Component {
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.sos.forEach(sos => {
-        if (sos_id < sos.id) {
+        if (sos_id < sos.id && sos_id != 0) {
           this.saveId("SOS-id", String(sos.id))
           this.pushNotification("¡¡¡SOS!!!", sos.title_es)
         }
@@ -455,6 +457,31 @@ class HomeScreen extends Component {
       this.saveId("SOS-id", last.id + "")
     }).catch(() => {});
   }
+
+
+  async getOfertas() {
+    await AsyncStorage.getItem("Ofertas-id").then((value) => {
+      if (value == null) {
+        ofertas_id = 0
+      } else {
+        ofertas_id = value;
+      }
+    })
+    fetch('https://app.dicloud.es/getOfertas.asp', {})
+    .then((response) => response.json())
+    .then((responseJson) => {
+      responseJson.ofertas.forEach(oferta => {
+        if (ofertas_id < oferta.id && ofertas_id != 0) {
+          this.saveId("Ofertas-id", String(oferta.id))
+          this.pushNotification("¡¡Tienes una nueva oferta!!", oferta.title_es)
+        }
+      });
+      var last = responseJson.sos[responseJson.ofertas.length-1]
+      this.saveId("Ofertas-id", last.id + "")
+    }).catch(() => {});
+  }
+
+
 
   configNotifications = () => {
     console.log("config - Notifications")
