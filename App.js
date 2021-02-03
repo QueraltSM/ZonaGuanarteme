@@ -425,11 +425,11 @@ class HomeScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.getSOS();
-    this.getOfertas();
-    /*setInterval(() => {
-      this.setLocation()
-    }, 60000);*/
+    setInterval(() => {
+      this.setLocation();
+      this.getSOS();
+      this.getOfertas();
+    }, 60000);
   }
 
   async saveId(key, value) {
@@ -437,6 +437,7 @@ class HomeScreen extends Component {
   }
 
   async getSOS() {
+    console.log("Estoy mirando getSOS")
     await AsyncStorage.getItem("SOS-id").then((value) => {
       if (value == null) {
         sos_id = 0
@@ -460,6 +461,7 @@ class HomeScreen extends Component {
 
 
   async getOfertas() {
+    console.log("Estoy mirando getOfertas")
     await AsyncStorage.getItem("Ofertas-id").then((value) => {
       if (value == null) {
         ofertas_id = 0
@@ -476,12 +478,10 @@ class HomeScreen extends Component {
           this.pushNotification("¡¡Tienes una nueva oferta!!", oferta.title_es)
         }
       });
-      var last = responseJson.sos[responseJson.ofertas.length-1]
+      var last = responseJson.ofertas[responseJson.ofertas.length-1]
       this.saveId("Ofertas-id", last.id + "")
     }).catch(() => {});
   }
-
-
 
   configNotifications = () => {
     console.log("config - Notifications")
@@ -519,7 +519,8 @@ class HomeScreen extends Component {
     },
     async taskId => {
       console.log('Received background-fetch event: ', taskId);
-      this.getSOS()
+      this.getSOS();
+      this.getOfertas();
       BackgroundFetch.finish(taskId);
     },
     error => {
@@ -553,6 +554,8 @@ class HomeScreen extends Component {
     if (this._isMounted) {
       this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
       Geolocation.getCurrentPosition(info => {
+        console.log("entroooo121624516")
+        console.log(info.coords.latitude)
         this.lat=info.coords.latitude
         this.lng=info.coords.longitude
         this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
