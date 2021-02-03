@@ -10,6 +10,8 @@ import NotificationService from './NotificationService';
 import BackgroundTask from 'react-native-background-task'
 import BackgroundFetch from 'react-native-background-fetch';
 import PushNotification from 'react-native-push-notification';
+import AsyncStorage from '@react-native-community/async-storage';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 class OffersScreen extends Component { 
 
@@ -411,6 +413,7 @@ class HomeScreen extends Component {
   idm="10162"
   lat=28.13598034627975
   lng=-15.436172595513227
+  sos_id=0
   webView = {
     canGoBack: false,
     ref: null,
@@ -427,27 +430,29 @@ class HomeScreen extends Component {
     }, 60000);*/
   }
 
-  getSOS() {
+  async saveId(key, value) {
+    await AsyncStorage.setItem(key, value);
+  }
+
+  async getSOS() {
+    await AsyncStorage.getItem("SOS-id").then((value) => {
+      if (value == null) {
+        sos_id = 0
+      } else {
+        sos_id = value;
+      }
+    })
     fetch('https://app.dicloud.es/getSOS.asp', {})
     .then((response) => response.json())
     .then((responseJson) => {
-      console.log(responseJson.sos.length)
       responseJson.sos.forEach(sos => {
-        if (sos.id < 14800) { // 14774 = sesion storage last
-          // con este si peta 14800
-          console.log("tengo que notificar: " + sos.id + " ==== " + 14774)
-          //this.pushNotification("¡¡¡SOS!!!", sos.title_es)
+        if (sos_id < sos.id) {
+          this.saveId("SOS-id", String(sos.id))
+          this.pushNotification("¡¡¡SOS!!!", sos.title_es)
         }
       });
-      /*let error = JSON.stringify(responseJson.error_code)
-      if (error == 0) {
-        let fullname = JSON.parse(JSON.stringify(responseJson.fullName))
-        let token = JSON.parse(JSON.stringify(responseJson.token))
-        let idempresa = JSON.parse(JSON.stringify(responseJson.idempresa))
-        this.goHome(alias,user,pass,fullname,idempresa,token)
-      } else {
-        this.handleError(error)
-      }*/
+      var last = responseJson.sos[responseJson.sos.length-1]
+      this.saveId("SOS-id", last.id + "")
     }).catch(() => {});
   }
 
