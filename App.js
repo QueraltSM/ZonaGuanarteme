@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Linking } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Linking, SectionList } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { WebView } from 'react-native-webview';
@@ -12,6 +12,119 @@ import BackgroundFetch from 'react-native-background-fetch';
 import PushNotification from 'react-native-push-notification';
 import AsyncStorage from '@react-native-community/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+
+class SettingsScreen extends Component { 
+
+  companies = [];
+
+  constructor(props) {
+    super(props);
+  }
+
+  async getCompanies() {
+    await fetch('https://app.dicloud.es/getCompanies.asp', {})
+    .then((response) => response.json())
+    .then((responseJson) => {
+      responseJson.companies.forEach(company => {
+        this.companies.push(company.description)
+      });
+    }).catch(() => {});
+  }
+
+  componentDidMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton = ()=>{
+    if (this.state.canGoBack) {
+      this.webView.ref.goBack();
+      return true;
+    }
+    return true;
+  }
+
+  goHome = () => {
+    this.props.navigation.navigate('Home')
+  }
+
+  goHelp = () => {
+    this.props.navigation.navigate('Help')
+ }
+
+  goSOS = () => {
+    this.props.navigation.navigate('SOS')
+  }
+
+  goOffers = () => {
+    this.props.navigation.navigate('Offers')
+  }
+
+  goSettings = () => {
+    this.props.navigation.navigate('Settings')
+  }
+
+  render(){
+    return(
+      <View style={{flex: 1}}>
+        <View style={styles.navBar}>
+          <Text style={styles.navBarHeader}>Compañías</Text>
+        </View>
+       <View style={styles.navBar}>
+        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+          <Text style={styles.navBarHeader}>SOS</Text>
+        </TouchableOpacity>
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goOffers} 
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#1A5276'
+          size={30}
+        />
+       <Icon
+          name='location'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goHome}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#1A5276'
+          size={30}
+        />
+        <Icon
+          name='bell'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goSettings}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#1A5276'
+          size={30}
+        />
+        <Icon
+          name='help'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goHelp}
+        />
+        </View>
+    </View>
+    )
+  }
+}
 
 class OffersScreen extends Component { 
 
@@ -54,6 +167,10 @@ class OffersScreen extends Component {
 
   goOffers = () => {
     this.props.navigation.navigate('Offers')
+  }
+
+  goSettings = () => {
+    this.props.navigation.navigate('Settings')
   }
 
   render(){
@@ -125,6 +242,7 @@ class OffersScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goSettings}
         />
         <Icon
           name='tag'
@@ -133,7 +251,7 @@ class OffersScreen extends Component {
           size={30}
         />
         <Icon
-          name='gear'
+          name='help'
           type='evilicon'
           color='#FFFFFF'
           size={30}
@@ -186,6 +304,10 @@ class HelpScreen extends Component {
 
   goOffers = () => {
     this.props.navigation.navigate('Offers')
+  }
+
+  goSettings = () => {
+    this.props.navigation.navigate('Settings')
   }
 
   render(){
@@ -248,6 +370,7 @@ class HelpScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goSettings}
         />
         <Icon
           name='tag'
@@ -310,6 +433,10 @@ class SOSScreen extends Component {
 
   goOffers = () => {
     this.props.navigation.navigate('Offers')
+  }
+
+  goSettings = () => {
+    this.props.navigation.navigate('Settings')
   }
 
   addSOS = () => {
@@ -385,6 +512,7 @@ class SOSScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goSettings}
         />
         <Icon
           name='tag'
@@ -393,7 +521,7 @@ class SOSScreen extends Component {
           size={30}
         />
         <Icon
-          name='gear'
+          name='help'
           type='evilicon'
           color='#FFFFFF'
           size={30}
@@ -604,6 +732,10 @@ class HomeScreen extends Component {
     this.props.navigation.navigate('Offers')
   }
 
+  goSettings = () => {
+    this.props.navigation.navigate('Settings')
+  }
+
   render(){
     return(
       <View style={{flex: 1}}>
@@ -673,6 +805,7 @@ class HomeScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
+          onPress={this.goSettings}
         />
         <Icon
           name='tag'
@@ -681,7 +814,7 @@ class HomeScreen extends Component {
           size={30}
         />
         <Icon
-          name='gear'
+          name='help'
           type='evilicon'
           color='#FFFFFF'
           size={30}
@@ -720,7 +853,14 @@ const AppNavigator = createStackNavigator({
       header: null,
       animationEnabled: false
     }
-  }
+  },
+  Settings: {
+    screen: SettingsScreen,
+    navigationOptions: {
+      header: null,
+      animationEnabled: false
+    }
+  },
 });
 
 export default createAppContainer(AppNavigator);
