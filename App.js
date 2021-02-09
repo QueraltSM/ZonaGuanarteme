@@ -54,7 +54,7 @@ class OffersScreen extends Component {
   }
 
   goOffers = () => {
-    this.props.navigation.navigate('Offers')
+    this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp" })
   }
 
   render(){
@@ -78,7 +78,7 @@ class OffersScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
+            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps:") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
@@ -184,7 +184,7 @@ class HelpScreen extends Component {
   }
 
   goHelp = () => {
-    this.props.navigation.navigate('Help')
+    this.setState({url: "https://admin.dicloud.es/zca/ayuda.html" })
  }
 
   goSOS = () => {
@@ -294,11 +294,11 @@ class SOSScreen extends Component {
   }
 
   constructor(props) {
-    super(props);
+    super(props);       
   }
 
   componentDidMount(){
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton); 
   }
 
   handleBackButton = ()=>{
@@ -317,8 +317,8 @@ class SOSScreen extends Component {
     this.props.navigation.navigate('Help')
  }
 
-  reloadSOS = () => {
-    this.props.navigation.navigate('SOS')
+  goSOS = () => {
+    this.setState({ url: "https://admin.dicloud.es/zca/sos/index.asp" })
   }
 
   goOffers = () => {
@@ -350,7 +350,7 @@ class SOSScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
+            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps:") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
@@ -364,7 +364,7 @@ class SOSScreen extends Component {
           }}
         />
        <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.reloadSOS} style={styles.navBarButton}>
+        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
           <Text style={styles.navBarHeader}>SOS</Text>
         </TouchableOpacity>
         <Icon
@@ -424,9 +424,17 @@ class SOSScreen extends Component {
   }
 }
 
+export class Company {
+  constructor(id, description, coordenadasmap) {
+    this.id = id;
+    this.description = description;
+    this.coordenadasmap = coordenadasmap
+  }
+}
 
 class HomeScreen extends Component { 
 
+  //companies=[Company];
   WEBVIEW_REF = "zca"
   map="https://admin.dicloud.es/zca/mapa.html"
   idm="10162"
@@ -439,41 +447,91 @@ class HomeScreen extends Component {
     ref: null,
   }
   state = {
-    url: ""
+    url: "",
+    companies: [Company]
   }
 
   constructor(props) {
     super(props);
     this.setLocation()
+    this.getCompanies();
+    setInterval(() => {
+      this.getSOS();
+      this.getOfertas();
+      this.notifyProximity();
+    }, 60000);
   }
 
   async saveId(key, value) {
     await AsyncStorage.setItem(key, value);
   }
 
+  calculateDistance(company, lat1, lon1, lat2, lon2){
+    var radlat1 = Math.PI * lat1/180
+    var radlat2 = Math.PI * lat2/180
+    var theta = lon1-lon2
+    var radtheta = Math.PI * theta/180
+    var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    dist = Math.acos(dist)
+    dist = dist * 180/Math.PI
+    dist = dist * 60 * 1.1515
+    dist = dist * 1.609344 * 1000
+    if (dist <= 55) {
+      this.pushNotification("¡¡Atencion!!", company + " está cerca")
+    }
+  }
+
+  async notifyProximity() {
+    console.log("Estoy mirando notifyProximity")
+    this.state.companies.forEach(company => {
+      var coords=company.coords+""
+      var lat2 = coords.split("*")[0] + ""
+      var lng2 = coords.split("*")[1] + ""
+      this.calculateDistance(company.description, this.lat, this.lng, lat2, lng2)
+    });
+  }
+
+  async getCompanies() {
+    var companies = [Company]
+    console.log("Estoy mirando getCompanies")
+    await fetch('https://app.dicloud.es/getCompanies.asp', {})
+    .then((response) => response.json())
+    .then((responseJson) => {
+      responseJson.companies.forEach(company => {
+        var c =  {
+          id: company.id,
+          description: company.description,
+          coords: company.coordenadasmap
+        }
+        companies.push(c);
+        //console.log(c.id + " " + c.description + " " + c.coords)
+      });
+      this.setState({ companies: companies })
+      console.log("size1:"+this.state.companies.length)
+      this.notifyProximity();
+    }).catch(() => {});
+  }
+
   async getSOS() {
     console.log("Estoy mirando getSOS")
     await AsyncStorage.getItem("SOS-id").then((value) => {
       if (value == null) {
-        sos_id = 0
+        this.sos_id = 0
       } else {
-        sos_id = value;
+        this.sos_id = value;
       }
     })
     fetch('https://app.dicloud.es/getSOS.asp', {})
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.sos.forEach(sos => {
-        if (sos_id < sos.id && sos_id != 0) {
+        if (this.sos_id < sos.id && this.sos_id != 0) {
           this.saveId("SOS-id", String(sos.id))
           this.pushNotification("¡¡¡SOS!!!", sos.title_es)
         }
       });
-      var last = responseJson.sos[responseJson.sos.length-1]
-      this.saveId("SOS-id", last.id + "")
     }).catch(() => {});
   }
-
 
   async getOfertas() {
     console.log("Estoy mirando getOfertas")
@@ -493,8 +551,6 @@ class HomeScreen extends Component {
           this.pushNotification("¡¡Tienes una nueva oferta!!", oferta.title_es)
         }
       });
-      var last = responseJson.ofertas[responseJson.ofertas.length-1]
-      this.saveId("Ofertas-id", last.id + "")
     }).catch(() => {});
   }
 
@@ -534,8 +590,8 @@ class HomeScreen extends Component {
     },
     async taskId => {
       console.log('Received background-fetch event: ', taskId);
-      //this.getSOS();
-      //this.getOfertas();
+      this.getSOS();
+      this.getOfertas();
       BackgroundFetch.finish(taskId);
     },
     error => {
@@ -558,6 +614,7 @@ class HomeScreen extends Component {
   componentDidMount(){
     console.log("componentDidMount")
     this._isMounted = true
+    this.setState({ companies: [] })
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng})
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.setLocation()
@@ -608,7 +665,6 @@ class HomeScreen extends Component {
     return true;
   }
 
-
   goHelp = () => {
     this.props.navigation.navigate('Help')
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
@@ -640,7 +696,7 @@ class HomeScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("tel") || event.url.includes("mailto") || event.url.includes("maps") || event.url.includes("facebook")) {
+            if (event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps:") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
