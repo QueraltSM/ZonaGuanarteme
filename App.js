@@ -14,9 +14,146 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
+class SuggestionsScreen extends Component { 
+
+  WEBVIEW_REF = "suggestions"
+  webView = {
+    canGoBack: false,
+    ref: null,
+  }
+  state = {
+    url: "https://admin.dicloud.es/zca/ofertas/sugerencias.asp"
+  }
+
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton = ()=>{
+    if (this.state.canGoBack) {
+      this.webView.ref.goBack();
+      return true;
+    }
+    return true;
+  }
+
+  setLocation = () => {
+    this.props.navigation.navigate('Home')
+  }
+
+  goHelp = () => {
+    this.props.navigation.navigate('Help')
+ }
+
+  goSOS = () => {
+    this.props.navigation.navigate('SOS')
+  }
+
+  goOffers = () => {
+    this.props.navigation.navigate('Offers')
+  }
+
+  goSuggestions = () => {
+    this.setState({url: "https://admin.dicloud.es/zca/ofertas/sugerencias.asp" })
+  }
+
+  render(){
+    return(
+      <View style={{flex: 1}}>
+        <View style={styles.navBar}>
+          <Text style={styles.navBarHeader}>Sugerencias</Text>
+        </View>
+        <WebView
+          ref={(webView) => { this.webView.ref = webView; }}
+          originWhitelist={['*']}
+          source={{ uri: this.state.url }}
+          startInLoadingState={true}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          setSupportMultipleWindows={false}
+          allowsBackForwardNavigationGestures
+          onNavigationStateChange={(navState) => {
+            this.setState({
+              canGoBack: navState.canGoBack
+            });
+          }}
+          onShouldStartLoadWithRequest={(event) => {
+            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps:") || event.url.includes("facebook")) {
+              Linking.canOpenURL(event.url).then((value) => {
+                if (value) {
+                  Linking.openURL(event.url)
+                }
+              })
+              return false
+            } else {
+              this.setState({ url: event.url })  
+              return true 
+            }
+          }}
+        />
+       <View style={styles.navBar}>
+        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+          <Text style={styles.navBarHeader}>SOS</Text>
+        </TouchableOpacity>
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goOffers}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#1A5276'
+          size={30}
+        />
+       <Icon
+          name='location'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.setLocation}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#1A5276'
+          size={30}
+        />
+        <Icon
+          name='star'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goSuggestions}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#1A5276'
+          size={30}
+        />
+        <Icon
+          name='help'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goHelp}
+        />
+        </View>
+    </View>
+    )
+  }
+}
+
 class OffersScreen extends Component { 
 
-  WEBVIEW_REF = "sos"
+  WEBVIEW_REF = "offers"
   webView = {
     canGoBack: false,
     ref: null,
@@ -55,6 +192,11 @@ class OffersScreen extends Component {
 
   goOffers = () => {
     this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp" })
+  }
+
+  goSuggestions = () => {
+    this.props.navigation.navigate('Suggestions')
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
   }
 
   render(){
@@ -98,21 +240,9 @@ class OffersScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
           color='#FFFFFF'
           size={30}
           onPress={this.goOffers}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
         />
         <Icon
           name='tag'
@@ -132,6 +262,13 @@ class OffersScreen extends Component {
           type='evilicon'
           color='#1A5276'
           size={30}
+        />
+        <Icon
+          name='star'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goSuggestions}
         />
         <Icon
           name='tag'
@@ -154,7 +291,7 @@ class OffersScreen extends Component {
 
 class HelpScreen extends Component { 
 
-  WEBVIEW_REF = "sos"
+  WEBVIEW_REF = "help"
   webView = {
     canGoBack: false,
     ref: null,
@@ -195,6 +332,11 @@ class HelpScreen extends Component {
     this.props.navigation.navigate('Offers')
   }
 
+  goSuggestions = () => {
+    this.props.navigation.navigate('Suggestions')
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
+  }
+
   render(){
     return(
       <View style={{flex: 1}}>
@@ -227,21 +369,9 @@ class HelpScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
           color='#FFFFFF'
           size={30}
           onPress={this.goOffers}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
         />
         <Icon
           name='tag'
@@ -261,6 +391,13 @@ class HelpScreen extends Component {
           type='evilicon'
           color='#1A5276'
           size={30}
+        />
+        <Icon
+          name='star'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goSuggestions}
         />
         <Icon
           name='tag'
@@ -329,6 +466,11 @@ class SOSScreen extends Component {
     this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
   }
 
+  goSuggestions = () => {
+    this.props.navigation.navigate('Suggestions')
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
+  }
+
   render(){
     return(
       <View style={{flex: 1}}>
@@ -370,21 +512,9 @@ class SOSScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
           color='#FFFFFF'
           size={30}
           onPress={this.goOffers}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
         />
         <Icon
           name='tag'
@@ -404,6 +534,13 @@ class SOSScreen extends Component {
           type='evilicon'
           color='#1A5276'
           size={30}
+        />
+        <Icon
+          name='star'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goSuggestions}
         />
         <Icon
           name='tag'
@@ -675,6 +812,11 @@ class HomeScreen extends Component {
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
   }
 
+  goSuggestions = () => {
+    this.props.navigation.navigate('Suggestions')
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
+  }
+
   render(){
     return(
       <View style={{flex: 1}}>
@@ -716,21 +858,9 @@ class HomeScreen extends Component {
         <Icon
           name='tag'
           type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
           color='#FFFFFF'
           size={30}
           onPress={this.goOffers}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
         />
         <Icon
           name='tag'
@@ -750,6 +880,13 @@ class HomeScreen extends Component {
           type='evilicon'
           color='#1A5276'
           size={30}
+        />
+        <Icon
+          name='star'
+          type='evilicon'
+          color='#FFFFFF'
+          size={30}
+          onPress={this.goSuggestions}
         />
         <Icon
           name='tag'
@@ -794,6 +931,13 @@ const AppNavigator = createStackNavigator({
   },
   Offers: {
     screen: OffersScreen,
+    navigationOptions: {
+      header: null,
+      animationEnabled: false
+    }
+  },
+  Suggestions: {
+    screen: SuggestionsScreen,
     navigationOptions: {
       header: null,
       animationEnabled: false
