@@ -571,9 +571,8 @@ export class Company {
 
 class HomeScreen extends Component { 
 
-  //companies=[Company];
   WEBVIEW_REF = "zca"
-  map="https://admin.dicloud.es/zca/mapa.html"
+  map="https://admin.dicloud.es/zca/mapa.asp"
   idm="10162"
   lat=28.13598034627975
   lng=-15.436172595513227
@@ -614,7 +613,7 @@ class HomeScreen extends Component {
     dist = dist * 60 * 1.1515
     dist = dist * 1.609344 * 1000
     if (dist <= 55) {
-      this.pushNotification("¡¡Atencion!!", company + " está cerca")
+      this.pushNotification("¡¡Atencion!!","Estás cerca de "+company)
     }
   }
 
