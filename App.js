@@ -569,6 +569,15 @@ export class Company {
   }
 }
 
+export class Sugerencia {
+  constructor(id, description, coordenadasmap, comments) {
+    this.id = id;
+    this.description = description;
+    this.coordenadasmap = coordenadasmap;
+    this.comments = comments;
+  }
+}
+
 class HomeScreen extends Component { 
 
   WEBVIEW_REF = "zca"
@@ -594,6 +603,7 @@ class HomeScreen extends Component {
     setInterval(() => {
       this.getSOS();
       this.getOfertas();
+      this.getSugerencias();
       this.notifyProximity();
     }, 60000);
   }
@@ -602,10 +612,10 @@ class HomeScreen extends Component {
     await AsyncStorage.setItem(key, value);
   }
 
-  calculateDistance(company, lat1, lon1, lat2, lon2){
-    var radlat1 = Math.PI * lat1/180
+  calculateDistance(lat2, lon2, title, message){
+    var radlat1 = Math.PI * this.lat/180
     var radlat2 = Math.PI * lat2/180
-    var theta = lon1-lon2
+    var theta = this.lng-lon2
     var radtheta = Math.PI * theta/180
     var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
     dist = Math.acos(dist)
@@ -613,7 +623,7 @@ class HomeScreen extends Component {
     dist = dist * 60 * 1.1515
     dist = dist * 1.609344 * 1000
     if (dist <= 55) {
-      this.pushNotification("¡¡Atencion!!","Estás cerca de "+company)
+      this.pushNotification(title,message)
     }
   }
 
@@ -623,7 +633,8 @@ class HomeScreen extends Component {
       var coords=company.coords+""
       var lat2 = coords.split("*")[0] + ""
       var lng2 = coords.split("*")[1] + ""
-      this.calculateDistance(company.description, this.lat, this.lng, lat2, lng2)
+      var message = company.description + " está cerca de ti"
+      this.calculateDistance(lat2, lng2, "Comercio cercano", message)
     });
   }
 
@@ -640,10 +651,8 @@ class HomeScreen extends Component {
           coords: company.coordenadasmap
         }
         companies.push(c);
-        //console.log(c.id + " " + c.description + " " + c.coords)
       });
       this.setState({ companies: companies })
-      console.log("size1:"+this.state.companies.length)
       this.notifyProximity();
     }).catch(() => {});
   }
@@ -664,6 +673,23 @@ class HomeScreen extends Component {
         if (this.sos_id < sos.id && this.sos_id != 0) {
           this.saveId("SOS-id", String(sos.id))
           this.pushNotification("¡¡¡SOS!!!", sos.title_es)
+        }
+      });
+    }).catch(() => {});
+  }
+
+  async getSugerencias() {
+    console.log("Estoy mirando getSugerencias")
+    fetch('https://app.dicloud.es/getSugerencias.asp', {})
+    .then((response) => response.json())
+    .then((responseJson) => {
+      responseJson.sugerencias.forEach(sugerencia => {
+        var coords = sugerencia.coordenadasmap + ""
+        if (coords != "") {
+          var lat2 = coords.split("*")[0] + "";
+          var lng2 = coords.split("*")[1] + "";
+          var message = "Tienes una sugerencia de " + sugerencia.description
+          this.calculateDistance(lat2, lng2, "Sugerencias y ofertas del dia", message)
         }
       });
     }).catch(() => {});
@@ -758,12 +784,9 @@ class HomeScreen extends Component {
   }
 
   setLocation = () => {
-    console.log(this._isMounted)
     if (this._isMounted) {
       this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
       Geolocation.getCurrentPosition(info => {
-        console.log("entroooo121624516")
-        console.log(info.coords.latitude)
         this.lat=info.coords.latitude
         this.lng=info.coords.longitude
         this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
