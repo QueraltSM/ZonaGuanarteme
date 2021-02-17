@@ -587,6 +587,7 @@ class HomeScreen extends Component {
   lng=-15.436172595513227
   sos_id=0
   ofertas_id=0
+  sugerencias_id=0
   webView = {
     canGoBack: false,
     ref: null,
@@ -609,6 +610,7 @@ class HomeScreen extends Component {
   }
 
   async saveId(key, value) {
+    console.log(key + " => " + value)
     await AsyncStorage.setItem(key, value);
   }
 
@@ -622,6 +624,7 @@ class HomeScreen extends Component {
     dist = dist * 180/Math.PI
     dist = dist * 60 * 1.1515
     dist = dist * 1.609344 * 1000
+    //console.log(dist + " | " + title + " | " + message)
     if (dist <= 55) {
       this.pushNotification(title,message)
     }
@@ -680,16 +683,29 @@ class HomeScreen extends Component {
 
   async getSugerencias() {
     console.log("Estoy mirando getSugerencias")
+    await AsyncStorage.getItem("Sugerencias-id").then((value) => {
+      if (value == null) {
+        this.sugerencias_id = 0
+      } else {
+        this.sugerencias_id = value;
+      }
+    })
     fetch('https://app.dicloud.es/getSugerencias.asp', {})
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.sugerencias.forEach(sugerencia => {
         var coords = sugerencia.coordenadasmap + ""
         if (coords != "") {
-          var lat2 = coords.split("*")[0] + "";
-          var lng2 = coords.split("*")[1] + "";
-          var message = "Tienes una sugerencia de " + sugerencia.description
-          this.calculateDistance(lat2, lng2, "Sugerencias y ofertas del dia", message)
+          console.log("SUGERENCIAS ID")
+          console.log(this.sugerencias_id + " and " + sugerencia.id)
+          if (this.sugerencias_id < sugerencia.id) {
+            var lat2 = coords.split("*")[0] + "";
+            var lng2 = coords.split("*")[1] + "";
+            var message = "Tienes una sugerencia de " + sugerencia.description
+            this.calculateDistance(lat2, lng2, "Sugerencias y ofertas del dia", message)
+            this.saveId("Sugerencias-id", String(sugerencia.id))
+            this.sugerencias_id = sugerencia.id
+          }
         }
       });
     }).catch(() => {});
