@@ -82,7 +82,7 @@ class SuggestionsScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps:") || event.url.includes("facebook")) {
+            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
@@ -220,7 +220,7 @@ class OffersScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps:") || event.url.includes("facebook")) {
+            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
@@ -492,7 +492,7 @@ class SOSScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps:") || event.url.includes("facebook")) {
+            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
@@ -588,6 +588,7 @@ class HomeScreen extends Component {
   sos_id=0
   ofertas_id=0
   sugerencias_id=0
+  comercio_id=0
   webView = {
     canGoBack: false,
     ref: null,
@@ -610,7 +611,6 @@ class HomeScreen extends Component {
   }
 
   async saveId(key, value) {
-    console.log(key + " => " + value)
     await AsyncStorage.setItem(key, value);
   }
 
@@ -624,26 +624,33 @@ class HomeScreen extends Component {
     dist = dist * 180/Math.PI
     dist = dist * 60 * 1.1515
     dist = dist * 1.609344 * 1000
-    //console.log(dist + " | " + title + " | " + message)
     if (dist <= 55) {
       this.pushNotification(title,message)
     }
   }
 
   async notifyProximity() {
-    console.log("Estoy mirando notifyProximity")
+    await AsyncStorage.getItem("Comercio-id").then((value) => {
+      if (value == null) {
+        this.comercio_id = 0
+      } else {
+        this.comercio_id = value;
+      }
+    })
     this.state.companies.forEach(company => {
-      var coords=company.coords+""
-      var lat2 = coords.split("*")[0] + ""
-      var lng2 = coords.split("*")[1] + ""
-      var message = company.description + " está cerca de ti"
-      this.calculateDistance(lat2, lng2, "Comercio cercano", message)
+      if (this.comercio_id < company.id && this.comercio_id != 0) {
+        this.saveId("Comercio-id", String(company.id))
+        var coords=company.coords+""
+        var lat2 = coords.split("*")[0] + ""
+        var lng2 = coords.split("*")[1] + ""
+        var message = company.description + " está cerca de ti"
+        this.calculateDistance(lat2, lng2, "Comercio cercano", message)
+      }
     });
   }
 
   async getCompanies() {
     var companies = [Company]
-    console.log("Estoy mirando getCompanies")
     await fetch('https://app.dicloud.es/getCompanies.asp', {})
     .then((response) => response.json())
     .then((responseJson) => {
@@ -661,7 +668,6 @@ class HomeScreen extends Component {
   }
 
   async getSOS() {
-    console.log("Estoy mirando getSOS")
     await AsyncStorage.getItem("SOS-id").then((value) => {
       if (value == null) {
         this.sos_id = 0
@@ -673,16 +679,15 @@ class HomeScreen extends Component {
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.sos.forEach(sos => {
-        if (this.sos_id < sos.id && this.sos_id != 0) {
+        if (this.sos_id < sos.id) {
           this.saveId("SOS-id", String(sos.id))
-          this.pushNotification("¡¡¡SOS!!!", sos.title_es)
+          this.pushNotification("Nuevo SOS", sos.title_es)
         }
       });
     }).catch(() => {});
   }
 
   async getSugerencias() {
-    console.log("Estoy mirando getSugerencias")
     await AsyncStorage.getItem("Sugerencias-id").then((value) => {
       if (value == null) {
         this.sugerencias_id = 0
@@ -696,8 +701,6 @@ class HomeScreen extends Component {
       responseJson.sugerencias.forEach(sugerencia => {
         var coords = sugerencia.coordenadasmap + ""
         if (coords != "") {
-          console.log("SUGERENCIAS ID")
-          console.log(this.sugerencias_id + " and " + sugerencia.id)
           if (this.sugerencias_id < sugerencia.id) {
             var lat2 = coords.split("*")[0] + "";
             var lng2 = coords.split("*")[1] + "";
@@ -712,28 +715,26 @@ class HomeScreen extends Component {
   }
 
   async getOfertas() {
-    console.log("Estoy mirando getOfertas")
     await AsyncStorage.getItem("Ofertas-id").then((value) => {
       if (value == null) {
-        ofertas_id = 0
+        this.ofertas_id = 0
       } else {
-        ofertas_id = value;
+        this.ofertas_id = value;
       }
     })
     fetch('https://app.dicloud.es/getOfertas.asp', {})
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.ofertas.forEach(oferta => {
-        if (ofertas_id < oferta.id && ofertas_id != 0) {
+        if (this.ofertas_id < oferta.id) {
           this.saveId("Ofertas-id", String(oferta.id))
-          this.pushNotification("¡¡Tienes una nueva oferta!!", oferta.title_es)
+          this.pushNotification("Nueva oferta a la vista", oferta.title_es)
         }
       });
     }).catch(() => {});
   }
 
   configNotifications = () => {
-    console.log("config - Notifications")
       PushNotification.configure({
         onNotification: notification => console.log(notification),
         permissions: {
@@ -759,7 +760,6 @@ class HomeScreen extends Component {
   }
 
   setBackgroundFetch = () => {
-    console.log("setBackgroundFetch")
     BackgroundFetch.configure({
       minimumFetchInterval: 15, // fetch interval in minutes
       enableHeadless: true,
@@ -767,9 +767,9 @@ class HomeScreen extends Component {
       periodic: true,
     },
     async taskId => {
-      console.log('Received background-fetch event: ', taskId);
       this.getSOS();
       this.getOfertas();
+      this.getSugerencias();
       BackgroundFetch.finish(taskId);
     },
     error => {
@@ -779,7 +779,6 @@ class HomeScreen extends Component {
   }
 
   pushNotification = (title, message) => {
-    console.log("NOTIFICACION!!!!!")
     PushNotification.localNotification({
       title: title,
       message: message,
@@ -790,7 +789,6 @@ class HomeScreen extends Component {
   }
 
   componentDidMount(){
-    console.log("componentDidMount")
     this._isMounted = true
     this.setState({ companies: [] })
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng})
@@ -876,7 +874,7 @@ class HomeScreen extends Component {
             });
           }}
           onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps:") || event.url.includes("facebook")) {
+            if (event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps") || event.url.includes("facebook")) {
               Linking.canOpenURL(event.url).then((value) => {
                 if (value) {
                   Linking.openURL(event.url)
