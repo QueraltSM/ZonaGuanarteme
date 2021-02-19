@@ -94,6 +94,17 @@ class SuggestionsScreen extends Component {
               return true 
             }
           }}
+          onError={(x) => console.log('Oh no!', x)}
+          renderError={() => {
+              return (
+                  <View style={styles.errorView}>
+                      <Text style={styles.error}>
+                          Algo salió mal...
+                      </Text>
+                      <Text></Text>
+                    <Text>Compruebe su conexión a Internet</Text>
+                  </View>);
+          }}
         />
        <View style={styles.navBar}>
         <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
@@ -232,6 +243,17 @@ class OffersScreen extends Component {
               return true 
             }
           }}
+          onError={(x) => console.log('Oh no!', x)}
+          renderError={() => {
+              return (
+                  <View style={styles.errorView}>
+                      <Text style={styles.error}>
+                          Algo salió mal...
+                      </Text>
+                      <Text></Text>
+                    <Text>Compruebe su conexión a Internet</Text>
+                  </View>);
+          }}
         />
        <View style={styles.navBar}>
         <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
@@ -360,6 +382,17 @@ class HelpScreen extends Component {
           onShouldStartLoadWithRequest={(event) => {
             this.setState({ url: event.url })  
             return true 
+          }}
+          onError={(x) => console.log('Oh no!', x)}
+          renderError={() => {
+              return (
+                  <View style={styles.errorView}>
+                      <Text style={styles.error}>
+                          Algo salió mal...
+                      </Text>
+                      <Text></Text>
+                    <Text>Compruebe su conexión a Internet</Text>
+                  </View>);
           }}
         />
        <View style={styles.navBar}>
@@ -503,6 +536,17 @@ class SOSScreen extends Component {
               this.setState({ url: event.url })  
               return true 
             }
+          }}
+          onError={(x) => console.log('Oh no!', x)}
+          renderError={() => {
+              return (
+                  <View style={styles.errorView}>
+                      <Text style={styles.error}>
+                          Algo salió mal...
+                      </Text>
+                      <Text></Text>
+                    <Text>Compruebe su conexión a Internet</Text>
+                  </View>);
           }}
         />
        <View style={styles.navBar}>
@@ -886,6 +930,17 @@ class HomeScreen extends Component {
               return true 
             }
           }}
+          onError={(x) => console.log('Oh no!', x)}
+                renderError={() => {
+                    return (
+                        <View style={styles.errorView}>
+                            <Text style={styles.error}>
+                                Algo salió mal...
+                            </Text>
+                            <Text></Text>
+                          <Text>Compruebe su conexión a Internet</Text>
+                        </View>);
+                }}
         />
        <View style={styles.navBar}>
         <TouchableOpacity onPress={this.SOS} style={styles.navBarButton}>
@@ -997,6 +1052,19 @@ const styles = StyleSheet.create({
     flexDirection:'row', 
     textAlignVertical: 'center',
     height: 50
+  },
+  error: {
+    fontSize: 20,
+    marginTop: 50,
+  },
+  errorView: {
+    width: '100%',
+    paddingLeft: '0%',
+    marginTop: 0,
+    height: '100%',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   textBoxBtnHolder:{
     position: 'relative',
