@@ -214,7 +214,7 @@ class OffersScreen extends Component {
     return(
       <View style={{flex: 1}}>
         <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>Ofertas</Text>
+          <Text style={styles.navBarHeader}>Ofertas flash</Text>
         </View>
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
