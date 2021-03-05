@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Linking, SectionList } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, ActivityIndicator } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { WebView } from 'react-native-webview';
@@ -13,9 +13,31 @@ import PushNotification from 'react-native-push-notification';
 import AsyncStorage from '@react-native-community/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+class MainScreen extends Component { 
+
+  constructor(props) {
+    super(props);
+  }
+
+  async componentDidMount() {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    this.props.navigation.navigate('Home');
+  }
+
+  render(){
+    return(
+        <View style={styles.mainView}>
+          <Image source={require('./logoZG.png')}
+            style={{ width: 100, height: 100, alignSelf: "center", marginBottom:20 }}
+          />
+          <Text style={styles.mainHeader}>Zona Comercial</Text>
+          <Text style={styles.mainHeader}>Abierta Guanarteme</Text>
+        </View>
+    )
+  }
+}
 
 class SuggestionsScreen extends Component { 
-
   WEBVIEW_REF = "suggestions"
   webView = {
     canGoBack: false,
@@ -41,20 +63,20 @@ class SuggestionsScreen extends Component {
     return true;
   }
 
-  setLocation = () => {
-    this.props.navigation.navigate('Home')
+  goHome = () => {
+    this.props.navigation.push('Home')
   }
 
   goHelp = () => {
-    this.props.navigation.navigate('Help')
+    this.props.navigation.push('Help')
  }
 
   goSOS = () => {
-    this.props.navigation.navigate('SOS')
+    this.props.navigation.push('SOS')
   }
 
   goOffers = () => {
-    this.props.navigation.navigate('Offers')
+    this.props.navigation.push('Offers')
   }
 
   goSuggestions = () => {
@@ -74,6 +96,7 @@ class SuggestionsScreen extends Component {
           startInLoadingState={true}
           javaScriptEnabled={true}
           domStorageEnabled={true}
+          incognito={true}
           setSupportMultipleWindows={false}
           allowsBackForwardNavigationGestures
           onNavigationStateChange={(navState) => {
@@ -128,7 +151,7 @@ class SuggestionsScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
-          onPress={this.setLocation}
+          onPress={this.goHome}
         />
         <Icon
           name='tag'
@@ -189,16 +212,16 @@ class OffersScreen extends Component {
     return true;
   }
 
-  setLocation = () => {
-    this.props.navigation.navigate('Home')
+  goHome = () => {
+    this.props.navigation.push('Home')
   }
 
   goHelp = () => {
-    this.props.navigation.navigate('Help')
+    this.props.navigation.push('Help')
  }
 
   goSOS = () => {
-    this.props.navigation.navigate('SOS')
+    this.props.navigation.push('SOS')
   }
 
   goOffers = () => {
@@ -264,7 +287,7 @@ class OffersScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
-          onPress={this.goOffers}
+          onPress={this.goHome}
         />
         <Icon
           name='tag'
@@ -338,8 +361,8 @@ class HelpScreen extends Component {
     return true;
   }
 
-  setLocation = () => {
-    this.props.navigation.navigate('Home')
+  goHome = () => {
+    this.props.navigation.push('Home')
   }
 
   goHelp = () => {
@@ -347,11 +370,11 @@ class HelpScreen extends Component {
  }
 
   goSOS = () => {
-    this.props.navigation.navigate('SOS')
+    this.props.navigation.push('SOS')
   }
 
   goOffers = () => {
-    this.props.navigation.navigate('Offers')
+    this.props.navigation.push('Offers')
   }
 
   goSuggestions = () => {
@@ -417,7 +440,7 @@ class HelpScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
-          onPress={this.setLocation}
+          onPress={this.goHome}
         />
         <Icon
           name='tag'
@@ -772,7 +795,7 @@ class HomeScreen extends Component {
       responseJson.ofertas.forEach(oferta => {
         if (this.ofertas_id < oferta.id) {
           this.saveId("Ofertas-id", String(oferta.id))
-          this.pushNotification("Nueva oferta a la vista", oferta.title_es)
+          this.pushNotification("Nueva oferta flash", oferta.title_es)
         }
       });
     }).catch(() => {});
@@ -855,6 +878,7 @@ class HomeScreen extends Component {
  goSOS = () => {
   this.props.navigation.navigate('SOS')
   this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
+  console.log("sos")
  }
 
   SOS = () =>{
@@ -872,6 +896,11 @@ class HomeScreen extends Component {
       this.lng=info.coords.longitude
       this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
     });
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
+ }
+
+ goHome = () => {
+  this.props.navigation.push('Home')
  }
   
   handleBackButton = ()=>{
@@ -883,26 +912,23 @@ class HomeScreen extends Component {
   }
 
   goHelp = () => {
-    this.props.navigation.navigate('Help')
+    this.props.navigation.push('Help')
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
   }
 
   goOffers = () => {
-    this.props.navigation.navigate('Offers')
+    this.props.navigation.push('Offers')
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
   }
 
   goSuggestions = () => {
-    this.props.navigation.navigate('Suggestions')
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
+    this.props.navigation.push('Suggestions')
+    //this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
   }
 
   render(){
     return(
       <View style={{flex: 1}}>
-        <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>Zona Guanarteme</Text>
-        </View>
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
           originWhitelist={['*']}
@@ -912,6 +938,7 @@ class HomeScreen extends Component {
           domStorageEnabled={true}
           setSupportMultipleWindows={false}
           allowsBackForwardNavigationGestures
+          incognito={true}
           onNavigationStateChange={(navState) => {
             this.setState({
               canGoBack: navState.canGoBack
@@ -964,7 +991,7 @@ class HomeScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
-          onPress={this.setLocation}
+          onPress={this.goHome}
         />
         <Icon
           name='tag'
@@ -999,6 +1026,13 @@ class HomeScreen extends Component {
 }
 
 const AppNavigator = createStackNavigator({
+  Main: {
+    screen: MainScreen,
+    navigationOptions: {
+      header: null,
+      animationEnabled: false
+    }
+  },
   Home: {
     screen: HomeScreen,
     navigationOptions: {
@@ -1056,6 +1090,16 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 20,
     marginTop: 50,
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: "#1A5276"
   },
   errorView: {
     width: '100%',
@@ -1122,4 +1166,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20
   },
+  mainView: {
+    backgroundColor:"#1A5276",
+    flex: 1,
+    justifyContent: 'center',
+  },
+  mainHeader: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 25,
+    alignSelf: "center"
+  }
 });
