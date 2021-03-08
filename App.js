@@ -20,8 +20,21 @@ class MainScreen extends Component {
   }
 
   async componentDidMount() {
+    var firstTime = false
     await new Promise(resolve => setTimeout(resolve, 1000));
-    this.props.navigation.navigate('Home');
+    await AsyncStorage.getItem("first-time").then((value) => {
+      console.log(value)
+      if (value == null) {
+        firstTime = true
+        this.props.navigation.navigate('Help');
+      }
+    })
+    if (firstTime) {
+      this.props.navigation.navigate('Help');
+      await AsyncStorage.setItem("first-time", "yes");
+    } else {
+      this.props.navigation.navigate('Home');
+    }
   }
 
   render(){
