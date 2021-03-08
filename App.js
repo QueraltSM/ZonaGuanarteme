@@ -37,154 +37,6 @@ class MainScreen extends Component {
   }
 }
 
-class SuggestionsScreen extends Component { 
-  WEBVIEW_REF = "suggestions"
-  webView = {
-    canGoBack: false,
-    ref: null,
-  }
-  state = {
-    url: "https://admin.dicloud.es/zca/ofertas/sugerencias.asp"
-  }
-
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount(){
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-  }
-
-  handleBackButton = ()=>{
-    if (this.state.canGoBack) {
-      this.webView.ref.goBack();
-      return true;
-    }
-    return true;
-  }
-
-  goHome = () => {
-    this.props.navigation.push('Home')
-  }
-
-  goHelp = () => {
-    this.props.navigation.push('Help')
- }
-
-  goSOS = () => {
-    this.props.navigation.push('SOS')
-  }
-
-  goOffers = () => {
-    this.props.navigation.push('Offers')
-  }
-
-  goSuggestions = () => {
-    this.setState({url: "https://admin.dicloud.es/zca/ofertas/sugerencias.asp" })
-  }
-
-  render(){
-    return(
-      <View style={{flex: 1}}>
-        <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>Sugerencias</Text>
-        </View>
-        <WebView
-          ref={(webView) => { this.webView.ref = webView; }}
-          originWhitelist={['*']}
-          source={{ uri: this.state.url }}
-          startInLoadingState={true}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          incognito={true}
-          setSupportMultipleWindows={false}
-          allowsBackForwardNavigationGestures
-          onNavigationStateChange={(navState) => {
-            this.setState({
-              canGoBack: navState.canGoBack
-            });
-          }}
-          onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("drive") || event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps") || event.url.includes("facebook")) {
-              Linking.canOpenURL(event.url).then((value) => {
-                if (value) {
-                  Linking.openURL(event.url)
-                }
-              })
-              return false
-            } else {
-              this.setState({ url: event.url })  
-              return true 
-            }
-          }}
-          onError={(x) => console.log('Oh no!', x)}
-          renderError={() => {
-              return (
-                  <View style={styles.errorView}>
-                      <Text style={styles.error}>
-                          Algo salió mal...
-                      </Text>
-                      <Text></Text>
-                    <Text>Compruebe su conexión a Internet</Text>
-                  </View>);
-          }}
-        />
-       <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-          <Text style={styles.navBarHeader}>SOS</Text>
-        </TouchableOpacity>
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goOffers}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-       <Icon
-          name='location'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHome}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='star'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goSuggestions}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='help'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHelp}
-        />
-        </View>
-    </View>
-    )
-  }
-}
-
 class OffersScreen extends Component { 
 
   WEBVIEW_REF = "offers"
@@ -228,16 +80,11 @@ class OffersScreen extends Component {
     this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp" })
   }
 
-  goSuggestions = () => {
-    this.props.navigation.navigate('Suggestions')
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
-  }
-
   render(){
     return(
       <View style={{flex: 1}}>
         <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>Ofertas flash</Text>
+          <Text style={styles.navBarHeader}>Ofertas Flash</Text>
         </View>
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
@@ -300,20 +147,7 @@ class OffersScreen extends Component {
           type='evilicon'
           color='#FFFFFF'
           size={30}
-          onPress={this.setLocation}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='star'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goSuggestions}
+          onPress={this.goHome}
         />
         <Icon
           name='tag'
@@ -366,7 +200,7 @@ class HelpScreen extends Component {
   }
 
   goHelp = () => {
-    this.setState({url: "https://admin.dicloud.es/zca/ayuda.html" })
+    this.props.navigation.push('Help')
  }
 
   goSOS = () => {
@@ -375,11 +209,6 @@ class HelpScreen extends Component {
 
   goOffers = () => {
     this.props.navigation.push('Offers')
-  }
-
-  goSuggestions = () => {
-    this.props.navigation.navigate('Suggestions')
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
   }
 
   render(){
@@ -449,19 +278,6 @@ class HelpScreen extends Component {
           size={30}
         />
         <Icon
-          name='star'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goSuggestions}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
           name='help'
           type='evilicon'
           color='#FFFFFF'
@@ -503,11 +319,11 @@ class SOSScreen extends Component {
   }
 
   setLocation = () => {
-    this.props.navigation.navigate('Home')
+    this.props.navigation.push('Home')
   }
 
   goHelp = () => {
-    this.props.navigation.navigate('Help')
+    this.props.navigation.push('Help')
  }
 
   goSOS = () => {
@@ -515,23 +331,18 @@ class SOSScreen extends Component {
   }
 
   goOffers = () => {
-    this.props.navigation.navigate('Offers')
+    this.props.navigation.push('Offers')
   }
 
   addSOS = () => {
     this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
   }
 
-  goSuggestions = () => {
-    this.props.navigation.navigate('Suggestions')
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
-  }
-
   render(){
     return(
       <View style={{flex: 1}}>
         <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>SOS</Text>
+          <Text style={styles.navBarHeader}>Emergencias</Text>
         </View>
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
@@ -603,19 +414,6 @@ class SOSScreen extends Component {
           size={30}
         />
         <Icon
-          name='star'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goSuggestions}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
           name='help'
           type='evilicon'
           color='#FFFFFF'
@@ -667,8 +465,11 @@ class HomeScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.setLocation()
+    this.setLocation();
     this.getCompanies();
+    this.getSOS();
+    this.getOfertas();
+
     setInterval(() => {
       this.getSOS();
       this.getOfertas();
@@ -746,9 +547,19 @@ class HomeScreen extends Component {
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.sos.forEach(sos => {
-        if (this.sos_id < sos.id) {
+        var day =  new Date().getDate();
+        if (day < 10) {
+          day = "0" + day
+        }
+        var month =  new Date().getMonth();
+        if (month < 10) {
+          month = "0" + month
+        }
+        var now = new Date(new Date().getFullYear() + "-" + month+ "-" +  day)
+        var sos_begin_date = new Date(sos.begin_date)
+        if (this.sos_id < sos.id && now.getTime()<=sos_begin_date.getTime()) {
           this.saveId("SOS-id", String(sos.id))
-          this.pushNotification("Nuevo SOS", sos.title_es)
+          this.pushNotification("Nueva emergencia", sos.title_es)
         }
       });
     }).catch(() => {});
@@ -771,7 +582,7 @@ class HomeScreen extends Component {
           if (this.sugerencias_id < sugerencia.id) {
             var lat2 = coords.split("*")[0] + "";
             var lng2 = coords.split("*")[1] + "";
-            var message = "Tienes una sugerencia de " + sugerencia.description
+            var message = "Sugerencia de " + sugerencia.description
             this.calculateDistance(lat2, lng2, "Sugerencias y ofertas del dia", message)
             this.saveId("Sugerencias-id", String(sugerencia.id))
             this.sugerencias_id = sugerencia.id
@@ -793,9 +604,11 @@ class HomeScreen extends Component {
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.ofertas.forEach(oferta => {
-        if (this.ofertas_id < oferta.id) {
+        var now = new Date()
+        var oferta_end_date = new Date(oferta.end_date)
+        if (this.ofertas_id < oferta.id && now.getTime()<=oferta_end_date.getTime()) {
           this.saveId("Ofertas-id", String(oferta.id))
-          this.pushNotification("Nueva oferta flash", oferta.title_es)
+          this.pushNotification("Oferta Flash", oferta.title_es)
         }
       });
     }).catch(() => {});
@@ -803,7 +616,11 @@ class HomeScreen extends Component {
 
   configNotifications = () => {
       PushNotification.configure({
-        onNotification: notification => console.log(notification),
+        onNotification: function(notification) {
+          if (notification.userInteraction) {
+            console.log("Click!!! = ")
+          }
+        },
         permissions: {
           alert: true,
           badge: true,
@@ -851,7 +668,7 @@ class HomeScreen extends Component {
       message: message,
       playSound: true,
       soundName: 'default',
-      channelId: "channel-id", 
+      channelId: "channel-id"
     });
   }
 
@@ -876,19 +693,8 @@ class HomeScreen extends Component {
  }
 
  goSOS = () => {
-  this.props.navigation.navigate('SOS')
-  this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
-  console.log("sos")
+  this.props.navigation.push('SOS')
  }
-
-  SOS = () =>{
-    this.props.navigation.navigate('SOS')
-    this.state = {
-      url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng
-    }
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    this.setLocation()
-  } 
 
   setLocation = () => {
     Geolocation.getCurrentPosition(info => {
@@ -913,17 +719,10 @@ class HomeScreen extends Component {
 
   goHelp = () => {
     this.props.navigation.push('Help')
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
   }
 
   goOffers = () => {
     this.props.navigation.push('Offers')
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
-  }
-
-  goSuggestions = () => {
-    this.props.navigation.push('Suggestions')
-    //this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
   }
 
   render(){
@@ -970,7 +769,7 @@ class HomeScreen extends Component {
                 }}
         />
        <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.SOS} style={styles.navBarButton}>
+        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
           <Text style={styles.navBarHeader}>SOS</Text>
         </TouchableOpacity>
         <Icon
@@ -992,19 +791,6 @@ class HomeScreen extends Component {
           color='#FFFFFF'
           size={30}
           onPress={this.goHome}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='star'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goSuggestions}
         />
         <Icon
           name='tag'
@@ -1056,13 +842,6 @@ const AppNavigator = createStackNavigator({
   },
   Offers: {
     screen: OffersScreen,
-    navigationOptions: {
-      header: null,
-      animationEnabled: false
-    }
-  },
-  Suggestions: {
-    screen: SuggestionsScreen,
     navigationOptions: {
       header: null,
       animationEnabled: false
