@@ -559,17 +559,9 @@ class HomeScreen extends Component {
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.sos.forEach(sos => {
-        var day =  new Date().getDate();
-        if (day < 10) {
-          day = "0" + day
-        }
-        var month =  new Date().getMonth();
-        if (month < 10) {
-          month = "0" + month
-        }
-        var now = new Date(new Date().getFullYear() + "-" + month+ "-" +  day)
+        var now = new Date()
         var sos_begin_date = new Date(sos.begin_date)
-        if (this.sos_id < sos.id && now.getTime()<=sos_begin_date.getTime()) {
+        if (this.sos_id < sos.id && now.toLocaleDateString() == sos_begin_date.toLocaleDateString()) {
           this.saveId("SOS-id", String(sos.id))
           this.pushNotification("Emergencia", sos.title_es)
         }
@@ -612,13 +604,19 @@ class HomeScreen extends Component {
         this.ofertas_id = value;
       }
     })
+    var firstTime = false
+    await AsyncStorage.getItem("first-time").then((value) => {
+      if (value == null) {
+        firstTime = true
+      }
+    })
     fetch('https://app.dicloud.es/getOfertas.asp', {})
     .then((response) => response.json())
     .then((responseJson) => {
       responseJson.ofertas.forEach(oferta => {
         var now = new Date()
         var endDate = new Date(oferta.end_date)
-        if (this.ofertas_id < oferta.id && now.getTime()<= endDate.getTime()) {
+        if (this.ofertas_id < oferta.id && now.getTime() <= endDate.getTime()) {
           this.saveId("Ofertas-id", String(oferta.id))
           this.pushNotification("Oferta Flash", oferta.title_es + " Hasta las " + endDate.getHours()+":"+endDate.getMinutes())
         }
