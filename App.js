@@ -23,7 +23,6 @@ class MainScreen extends Component {
     var firstTime = false
     await new Promise(resolve => setTimeout(resolve, 1000));
     await AsyncStorage.getItem("first-time").then((value) => {
-      console.log(value)
       if (value == null) {
         firstTime = true
         this.props.navigation.navigate('Help');
@@ -482,8 +481,8 @@ class HomeScreen extends Component {
     this.getCompanies();
     this.getSOS();
     this.getOfertas();
-
     setInterval(() => {
+      this.setLocation();
       this.getSOS();
       this.getOfertas();
       this.getSugerencias();
@@ -572,7 +571,7 @@ class HomeScreen extends Component {
         var sos_begin_date = new Date(sos.begin_date)
         if (this.sos_id < sos.id && now.getTime()<=sos_begin_date.getTime()) {
           this.saveId("SOS-id", String(sos.id))
-          this.pushNotification("Nueva emergencia", sos.title_es)
+          this.pushNotification("Emergencia", sos.title_es)
         }
       });
     }).catch(() => {});
@@ -618,10 +617,10 @@ class HomeScreen extends Component {
     .then((responseJson) => {
       responseJson.ofertas.forEach(oferta => {
         var now = new Date()
-        var oferta_end_date = new Date(oferta.end_date)
-        if (this.ofertas_id < oferta.id && now.getTime()<=oferta_end_date.getTime()) {
+        var endDate = new Date(oferta.end_date)
+        if (this.ofertas_id < oferta.id && now.getTime()<= endDate.getTime()) {
           this.saveId("Ofertas-id", String(oferta.id))
-          this.pushNotification("Oferta Flash", oferta.title_es)
+          this.pushNotification("Oferta Flash", oferta.title_es + " Hasta las " + endDate.getHours()+":"+endDate.getMinutes())
         }
       });
     }).catch(() => {});
@@ -629,11 +628,7 @@ class HomeScreen extends Component {
 
   configNotifications = () => {
       PushNotification.configure({
-        onNotification: function(notification) {
-          if (notification.userInteraction) {
-            console.log("Click!!! = ")
-          }
-        },
+        onNotification: function(notification) {},
         permissions: {
           alert: true,
           badge: true,
@@ -694,22 +689,12 @@ class HomeScreen extends Component {
     this.configNotifications()
   }
 
-  setLocation = () => {
-    if (this._isMounted) {
-      this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
-      Geolocation.getCurrentPosition(info => {
-        this.lat=info.coords.latitude
-        this.lng=info.coords.longitude
-        this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
-      });
-    } 
- }
-
  goSOS = () => {
   this.props.navigation.push('SOS')
  }
 
   setLocation = () => {
+    console.log("setLocation")
     Geolocation.getCurrentPosition(info => {
       this.lat=info.coords.latitude
       this.lng=info.coords.longitude
