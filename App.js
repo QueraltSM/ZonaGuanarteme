@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, Alert } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { WebView } from 'react-native-webview';
@@ -472,7 +472,8 @@ class HomeScreen extends Component {
   }
   state = {
     url: "",
-    companies: [Company]
+    companies: [Company],
+    noGeo: false
   }
 
   constructor(props) {
@@ -681,7 +682,7 @@ class HomeScreen extends Component {
   componentDidMount(){
     this._isMounted = true
     this.setState({ companies: [] })
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng})
+    //this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng + "&movil=si"})
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.setLocation()
     this.configNotifications()
@@ -691,14 +692,18 @@ class HomeScreen extends Component {
   this.props.navigation.push('SOS')
  }
 
-  setLocation = () => {
-    console.log("setLocation")
+  setLocation () {
     Geolocation.getCurrentPosition(info => {
+      console.log(info.coords.latitude + " and " + info.coords.longitude)
       this.lat=info.coords.latitude
       this.lng=info.coords.longitude
-      this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
-    });
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng })
+      this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng + "&movil=si" })
+      this.setState({ noGeo: false })
+    }, (error => {
+      if (error.code == 2) {
+        this.setState({ noGeo: true })
+      }
+    }));
  }
 
  goHome = () => {
@@ -722,88 +727,140 @@ class HomeScreen extends Component {
   }
 
   render(){
-    return(
-      <View style={{flex: 1}}>
-        <WebView
-          ref={(webView) => { this.webView.ref = webView; }}
-          originWhitelist={['*']}
-          source={{ uri: this.state.url }}
-          startInLoadingState={true}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          setSupportMultipleWindows={false}
-          allowsBackForwardNavigationGestures
-          incognito={true}
-          onNavigationStateChange={(navState) => {
-            this.setState({
-              canGoBack: navState.canGoBack
-            });
-          }}
-          onShouldStartLoadWithRequest={(event) => {
-            if (event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps") || event.url.includes("facebook")) {
-              Linking.canOpenURL(event.url).then((value) => {
-                if (value) {
-                  Linking.openURL(event.url)
-                }
-              })
-              return false
-            } else {
-              this.setState({ url: event.url })  
-              return true 
-            }
-          }}
-          onError={(x) => console.log('Oh no!', x)}
-                renderError={() => {
-                    return (
-                        <View style={styles.errorView}>
-                            <Text style={styles.error}>
-                                Algo salió mal...
-                            </Text>
-                            <Text></Text>
-                          <Text>Compruebe su conexión a Internet</Text>
-                        </View>);
-                }}
-        />
-       <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-          <Text style={styles.navBarHeader}>SOS</Text>
-        </TouchableOpacity>
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goOffers}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-       <Icon
-          name='location'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHome}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='help'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHelp}
-        />
+      if (this.state.noGeo) {
+        return (
+        <View style={{flex: 1}}>
+        <View style={styles.mainView}>
+          <Image source={require('./logoZG.png')}
+            style={{ width: 100, height: 100, alignSelf: "center", marginBottom:20 }}
+          />
+          <Text style={styles.mainHeaderGPS}>Active su GPS</Text>
+          <Text style={styles.mainHeaderGPS}>Entre en Zona Guanarteme</Text>
+          </View>
+          <View style={styles.navBar}>
+            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+              <Text style={styles.navBarHeader}>SOS</Text>
+            </TouchableOpacity>
+            <Icon
+              name='tag'
+              type='evilicon'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goOffers}
+            />
+            <Icon
+              name='tag'
+              type='evilicon'
+              color='#1A5276'
+              size={30}
+            />
+           <Icon
+              name='location'
+              type='evilicon'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goHome}
+            />
+            <Icon
+              name='tag'
+              type='evilicon'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='help'
+              type='evilicon'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goHelp}
+            />
+            </View>
         </View>
-    </View>
-    )
+        )
+      } else {
+        return(
+          <View style={{flex: 1}}>
+            <WebView
+              ref={(webView) => { this.webView.ref = webView; }}
+              originWhitelist={['*']}
+              source={{ uri: this.state.url }}
+              startInLoadingState={true}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              setSupportMultipleWindows={false}
+              allowsBackForwardNavigationGestures
+              incognito={true}
+              onNavigationStateChange={(navState) => {
+                this.setState({
+                  canGoBack: navState.canGoBack
+                });
+              }}
+              onShouldStartLoadWithRequest={(event) => {
+                if (event.url.includes("tel:") || event.url.includes("mailto:") || event.url.includes("maps") || event.url.includes("facebook")) {
+                  Linking.canOpenURL(event.url).then((value) => {
+                    if (value) {
+                      Linking.openURL(event.url)
+                    }
+                  })
+                  return false
+                } else {
+                  this.setState({ url: event.url })  
+                  return true 
+                }
+              }}
+              onError={(x) => console.log('Oh no!', x)}
+                    renderError={() => {
+                        return (
+                            <View style={styles.errorView}>
+                                <Text style={styles.error}>
+                                    Algo salió mal...
+                                </Text>
+                                <Text></Text>
+                              <Text>Compruebe su conexión a Internet</Text>
+                            </View>);
+                    }}
+            />
+           <View style={styles.navBar}>
+            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+              <Text style={styles.navBarHeader}>SOS</Text>
+            </TouchableOpacity>
+            <Icon
+              name='tag'
+              type='evilicon'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goOffers}
+            />
+            <Icon
+              name='tag'
+              type='evilicon'
+              color='#1A5276'
+              size={30}
+            />
+           <Icon
+              name='location'
+              type='evilicon'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goHome}
+            />
+            <Icon
+              name='tag'
+              type='evilicon'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='help'
+              type='evilicon'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goHelp}
+            />
+            </View>
+        </View>
+        )
+      }
   }
 }
 
@@ -951,5 +1008,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 25,
     alignSelf: "center"
+  },
+  mainHeaderGPS: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 25,
+    alignSelf: "center",
+    paddingTop: 20
   }
 });
