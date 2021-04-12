@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, Alert } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, Alert, ActivityIndicator } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { WebView } from 'react-native-webview';
@@ -76,7 +76,8 @@ class OffersScreen extends Component {
     return true;
   }
 
-  goHome = () => {
+  goHome = async() => {
+    await new AsyncStorage.setItem("centerMap", JSON.stringify(false))
     this.props.navigation.push('Home')
   }
 
@@ -90,6 +91,11 @@ class OffersScreen extends Component {
 
   goOffers = () => {
     this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp" })
+  }
+
+  centerMap = async() => {
+    await new AsyncStorage.setItem("centerMap", JSON.stringify(true))
+    this.props.navigation.push('Home')
   }
 
   render(){
@@ -162,6 +168,19 @@ class OffersScreen extends Component {
           onPress={this.goHome}
         />
         <Icon
+              name='tag'
+              type='evilicon'
+              color='#1A5276'
+              size={30}
+            />      
+            <Icon
+              name='pointer'
+              type='evilicon'
+              color='#FFFFFF'
+              size={35}
+              onPress={this.centerMap}
+            />
+        <Icon
           name='tag'
           type='evilicon'
           color='#1A5276'
@@ -207,7 +226,8 @@ class HelpScreen extends Component {
     return true;
   }
 
-  goHome = () => {
+  goHome = async() => {
+    await new AsyncStorage.setItem("centerMap", JSON.stringify(false))
     this.props.navigation.push('Home')
   }
 
@@ -223,12 +243,14 @@ class HelpScreen extends Component {
     this.props.navigation.push('Offers')
   }
 
+  centerMap = async() => {
+    await new AsyncStorage.setItem("centerMap", JSON.stringify(true))
+    this.props.navigation.push('Home')
+  }
+
   render(){
     return(
       <View style={{flex: 1}}>
-        <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>Ayuda</Text>
-        </View>
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
           originWhitelist={['*']}
@@ -288,6 +310,19 @@ class HelpScreen extends Component {
           type='evilicon'
           color='#1A5276'
           size={30}
+        />      
+        <Icon
+          name='pointer'
+          type='evilicon'
+          color='#FFFFFF'
+          size={35}
+          onPress={this.centerMap}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#1A5276'
+          size={30}
         />
         <Icon
           name='help'
@@ -330,7 +365,8 @@ class SOSScreen extends Component {
     return true;
   }
 
-  setLocation = () => {
+  setLocation = async () => {
+    await new AsyncStorage.setItem("centerMap", JSON.stringify(false))
     this.props.navigation.push('Home')
   }
 
@@ -348,6 +384,11 @@ class SOSScreen extends Component {
 
   addSOS = () => {
     this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
+  }
+
+  centerMap = async() => {
+    await new AsyncStorage.setItem("centerMap", JSON.stringify(true))
+    this.props.navigation.push('Home')
   }
 
   render(){
@@ -424,6 +465,19 @@ class SOSScreen extends Component {
           type='evilicon'
           color='#1A5276'
           size={30}
+        />      
+        <Icon
+          name='pointer'
+          type='evilicon'
+          color='#FFFFFF'
+          size={35}
+          onPress={this.centerMap}
+        />
+        <Icon
+          name='tag'
+          type='evilicon'
+          color='#1A5276'
+          size={30}
         />
         <Icon
           name='help'
@@ -473,11 +527,13 @@ class HomeScreen extends Component {
   state = {
     url: "",
     companies: [Company],
-    noGeo: false
+    noGeo: false,
+    centerMap: false
   }
 
   constructor(props) {
     super(props);
+    this.init()
     this.setLocation();
     this.getCompanies();
     this.getSOS();
@@ -489,6 +545,15 @@ class HomeScreen extends Component {
       this.getSugerencias();
       this.notifyProximity();
     }, 60000);
+  }
+
+  async init() {
+    await AsyncStorage.getItem("centerMap").then((value) => {
+      if (value == null) {
+        value = false
+      }
+      this.setState({ centerMap: JSON.parse(value) })
+    })
   }
 
   async saveId(key, value) {
@@ -688,26 +753,35 @@ class HomeScreen extends Component {
     this.configNotifications()
   }
 
- goSOS = () => {
-  this.props.navigation.push('SOS')
- }
+  goSOS = () => {
+    this.props.navigation.push('SOS')
+  }
 
-  setLocation () {
-    Geolocation.getCurrentPosition(info => {
-      console.log(info.coords.latitude + " and " + info.coords.longitude)
-      this.lat=info.coords.latitude
-      this.lng=info.coords.longitude
-      this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng + "&movil=si" })
-      this.setState({ noGeo: false })
-    }, (error => {
+  setURL(lat, lng) {
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+lat+ "&lng="+lng + "&movil=si" })
+  }
+
+  async setLocation () {
+    this.setState({ noGeo: false })
+    if (this.state.centerMap) {
+      this.setURL(28.13598034627975,-15.436172595513227)
+    }
+    Geolocation.getCurrentPosition(
+      (info) => {
+      this.setURL(info.coords.latitude, info.coords.longitude)
+    }, (error) => {
       if (error.code == 2) {
         this.setState({ noGeo: true })
       }
-    }));
- }
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 1000 }
+    );
+  }
 
- goHome = () => {
+ goHome = async () => {
+  this.setState({centerMap: false})
   this.props.navigation.push('Home')
+  await new AsyncStorage.setItem("centerMap", JSON.stringify(false))
  }
   
   handleBackButton = ()=>{
@@ -716,6 +790,18 @@ class HomeScreen extends Component {
       return true;
     }
     return true;
+  }
+
+  centerMap = () => {
+    this.setState({centerMap: true})
+    this.setURL(28.13598034627975,-15.436172595513227)
+  }
+
+  showHeader = () => {
+    if (this.state.centerMap) {
+      return <View style={styles.navBar}><Text style={styles.navBarHeader}>Zona Guanarteme Centro</Text></View>
+    } 
+    return <View style={styles.navBar}><Text style={styles.navBarHeader}>Mi ubicación</Text></View>
   }
 
   goHelp = () => {
@@ -735,7 +821,7 @@ class HomeScreen extends Component {
             style={{ width: 100, height: 100, alignSelf: "center", marginBottom:20 }}
           />
           <Text style={styles.mainHeaderGPS}>Active su GPS</Text>
-          <Text style={styles.mainHeaderGPS}>Entre en Zona Guanarteme</Text>
+          <Text style={styles.mainHeaderGPS}>Entre en Guanarteme</Text>
           </View>
           <View style={styles.navBar}>
             <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
@@ -760,6 +846,19 @@ class HomeScreen extends Component {
               color='#FFFFFF'
               size={30}
               onPress={this.goHome}
+            /> 
+            <Icon
+              name='tag'
+              type='evilicon'
+              color='#1A5276'
+              size={30}
+            />      
+            <Icon
+              name='pointer'
+              type='evilicon'
+              color='#FFFFFF'
+              size={35}
+              onPress={this.centerMap}
             />
             <Icon
               name='tag'
@@ -780,6 +879,7 @@ class HomeScreen extends Component {
       } else {
         return(
           <View style={{flex: 1}}>
+            {this.showHeader()}
             <WebView
               ref={(webView) => { this.webView.ref = webView; }}
               originWhitelist={['*']}
@@ -808,6 +908,10 @@ class HomeScreen extends Component {
                   return true 
                 }
               }}
+              renderLoading={() => 
+                <View style={styles.loading}>
+                <ActivityIndicator color={'white'} size="large"/>
+              </View>}
               onError={(x) => console.log('Oh no!', x)}
                     renderError={() => {
                         return (
@@ -843,6 +947,19 @@ class HomeScreen extends Component {
               color='#FFFFFF'
               size={30}
               onPress={this.goHome}
+            />
+            <Icon
+              name='tag'
+              type='evilicon'
+              color='#1A5276'
+              size={30}
+            />      
+            <Icon
+              name='pointer'
+              type='evilicon'
+              color='#FFFFFF'
+              size={35}
+              onPress={this.centerMap}
             />
             <Icon
               name='tag'
