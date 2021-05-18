@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, TextInput, ActivityIndicator } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { WebView } from 'react-native-webview';
@@ -57,11 +57,22 @@ class OffersScreen extends Component {
     ref: null,
   }
   state = {
-    url: "https://admin.dicloud.es/zca/ofertas/index.asp"
+    url: "https://admin.dicloud.es/zca/ofertas/index.asp",
+    myLoc: false
   }
 
   constructor(props) {
     super(props);
+    this.init()
+  }
+
+  async init() {
+    await AsyncStorage.getItem("myLoc").then((value) => {
+      if (value == null) {
+        value = false
+      }
+      this.setState({ myLoc: JSON.parse(value) })
+    })
   }
 
   componentDidMount(){
@@ -76,8 +87,7 @@ class OffersScreen extends Component {
     return true;
   }
 
-  goHome = async() => {
-    await new AsyncStorage.setItem("centerMap", JSON.stringify(false))
+  setLocation = async () => {
     this.props.navigation.push('Home')
   }
 
@@ -93,9 +103,23 @@ class OffersScreen extends Component {
     this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp" })
   }
 
-  centerMap = async() => {
-    await new AsyncStorage.setItem("centerMap", JSON.stringify(true))
-    this.props.navigation.push('Home')
+  setLocationIcon() {
+    if (this.state.myLoc) {
+       return <Icon
+         name='map-marker'
+         type='font-awesome'
+         color='#FFFFFF'
+         size={30}
+         onPress={this.setLocation}
+       />;
+     } 
+     return <Icon
+     name='map'
+     type='font-awesome'
+     color='#FFFFFF'
+     size={25}
+     onPress={this.setLocation}
+   />;
   }
 
   render(){
@@ -143,57 +167,68 @@ class OffersScreen extends Component {
                   </View>);
           }}
         />
-       <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-          <Text style={styles.navBarHeader}>SOS</Text>
-        </TouchableOpacity>
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHome}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-       <Icon
-          name='location'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHome}
-        />
-        <Icon
+           <View style={styles.navBar}>
+            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+              <Text style={styles.navBarHeader}>SOS</Text>
+            </TouchableOpacity>
+            <Icon
               name='tag'
-              type='evilicon'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goOffers}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
               color='#1A5276'
               size={30}
-            />      
-            <Icon
-              name='pointer'
-              type='evilicon'
-              color='#FFFFFF'
-              size={35}
-              onPress={this.centerMap}
             />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='help'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHelp}
-        />
-        </View>
+           <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            {this.setLocationIcon()}
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='help'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goHelp}
+            />
+            </View>
     </View>
     )
   }
@@ -204,14 +239,25 @@ class HelpScreen extends Component {
   WEBVIEW_REF = "help"
   webView = {
     canGoBack: false,
-    ref: null,
+    ref: null
   }
   state = {
-    url: "https://admin.dicloud.es/zca/ayuda.html"
+    url: "https://admin.dicloud.es/zca/ayuda.html",
+    myLoc: false
   }
 
   constructor(props) {
     super(props);
+    this.init()
+  }
+
+  async init() {
+    await AsyncStorage.getItem("myLoc").then((value) => {
+      if (value == null) {
+        value = false
+      }
+      this.setState({ myLoc: JSON.parse(value) })
+    })
   }
 
   componentDidMount(){
@@ -226,8 +272,7 @@ class HelpScreen extends Component {
     return true;
   }
 
-  goHome = async() => {
-    await new AsyncStorage.setItem("centerMap", JSON.stringify(false))
+  setLocation = async () => {
     this.props.navigation.push('Home')
   }
 
@@ -243,9 +288,23 @@ class HelpScreen extends Component {
     this.props.navigation.push('Offers')
   }
 
-  centerMap = async() => {
-    await new AsyncStorage.setItem("centerMap", JSON.stringify(true))
-    this.props.navigation.push('Home')
+  setLocationIcon() {
+    if (this.state.myLoc) {
+       return <Icon
+         name='map-marker'
+         type='font-awesome'
+         color='#FFFFFF'
+         size={30}
+         onPress={this.setLocation}
+       />;
+     } 
+     return <Icon
+     name='map'
+     type='font-awesome'
+     color='#FFFFFF'
+     size={25}
+     onPress={this.setLocation}
+   />;
   }
 
   render(){
@@ -281,57 +340,68 @@ class HelpScreen extends Component {
                   </View>);
           }}
         />
-       <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-          <Text style={styles.navBarHeader}>SOS</Text>
-        </TouchableOpacity>
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goOffers}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-       <Icon
-          name='location'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHome}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />      
-        <Icon
-          name='pointer'
-          type='evilicon'
-          color='#FFFFFF'
-          size={35}
-          onPress={this.centerMap}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='help'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHelp}
-        />
-        </View>
+           <View style={styles.navBar}>
+            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+              <Text style={styles.navBarHeader}>SOS</Text>
+            </TouchableOpacity>
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goOffers}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+           <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            {this.setLocationIcon()}
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='help'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goHelp}
+            />
+            </View>
     </View>
     )
   }
@@ -343,16 +413,27 @@ class SOSScreen extends Component {
   WEBVIEW_REF = "sos"
   webView = {
     canGoBack: false,
-    ref: null,
+    ref: null
   }
   state = {
-    url: "https://admin.dicloud.es/zca/sos/index.asp"
+    url: "https://admin.dicloud.es/zca/sos/index.asp",
+    myLoc: false
   }
 
   constructor(props) {
-    super(props);       
+    super(props); 
+    this.init()   
   }
 
+  async init() {
+    await AsyncStorage.getItem("myLoc").then((value) => {
+      if (value == null) {
+        value = false
+      }
+      this.setState({ myLoc: JSON.parse(value) })
+    })
+  }
+  
   componentDidMount(){
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton); 
   }
@@ -366,7 +447,6 @@ class SOSScreen extends Component {
   }
 
   setLocation = async () => {
-    await new AsyncStorage.setItem("centerMap", JSON.stringify(false))
     this.props.navigation.push('Home')
   }
 
@@ -386,9 +466,23 @@ class SOSScreen extends Component {
     this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
   }
 
-  centerMap = async() => {
-    await new AsyncStorage.setItem("centerMap", JSON.stringify(true))
-    this.props.navigation.push('Home')
+  setLocationIcon() {
+    if (this.state.myLoc) {
+       return <Icon
+         name='map-marker'
+         type='font-awesome'
+         color='#FFFFFF'
+         size={30}
+         onPress={this.setLocation}
+       />;
+     } 
+     return <Icon
+     name='map'
+     type='font-awesome'
+     color='#FFFFFF'
+     size={25}
+     onPress={this.setLocation}
+   />;
   }
 
   render(){
@@ -436,57 +530,68 @@ class SOSScreen extends Component {
                   </View>);
           }}
         />
-       <View style={styles.navBar}>
-        <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-          <Text style={styles.navBarHeader}>SOS</Text>
-        </TouchableOpacity>
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goOffers}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-       <Icon
-          name='location'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.setLocation}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />      
-        <Icon
-          name='pointer'
-          type='evilicon'
-          color='#FFFFFF'
-          size={35}
-          onPress={this.centerMap}
-        />
-        <Icon
-          name='tag'
-          type='evilicon'
-          color='#1A5276'
-          size={30}
-        />
-        <Icon
-          name='help'
-          type='evilicon'
-          color='#FFFFFF'
-          size={30}
-          onPress={this.goHelp}
-        />
-        </View>
+           <View style={styles.navBar}>
+            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
+              <Text style={styles.navBarHeader}>SOS</Text>
+            </TouchableOpacity>
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goOffers}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+           <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            {this.setLocationIcon()}
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='help'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goHelp}
+            />
+            </View>
     </View>
     )
   }
@@ -528,7 +633,9 @@ class HomeScreen extends Component {
     url: "",
     companies: [Company],
     noGeo: false,
-    centerMap: false
+    centerMap: false,
+    myLoc: true,
+    showSearchInput: false
   }
 
   constructor(props) {
@@ -539,7 +646,6 @@ class HomeScreen extends Component {
     this.getSOS();
     this.getOfertas();
     setInterval(() => {
-      this.setLocation();
       this.getSOS();
       this.getOfertas();
       this.getSugerencias();
@@ -554,6 +660,13 @@ class HomeScreen extends Component {
       }
       this.setState({ centerMap: JSON.parse(value) })
     })
+    await AsyncStorage.getItem("myLoc").then((value) => {
+      if (value == null) {
+        value = false
+      }
+      this.setState({ myLoc: JSON.parse(value) })
+    })
+    this.setLocationIcon()
   }
 
   async saveId(key, value) {
@@ -747,7 +860,6 @@ class HomeScreen extends Component {
   componentDidMount(){
     this._isMounted = true
     this.setState({ companies: [] })
-    //this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng + "&movil=si"})
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.setLocation()
     this.configNotifications()
@@ -779,9 +891,36 @@ class HomeScreen extends Component {
   }
 
  goHome = async () => {
-  this.setState({centerMap: false})
-  this.props.navigation.push('Home')
-  await new AsyncStorage.setItem("centerMap", JSON.stringify(false))
+  var newCenterMap = !JSON.parse(this.state.centerMap)
+  this.setState({centerMap: newCenterMap})
+  await new AsyncStorage.setItem("centerMap", JSON.stringify(newCenterMap))
+  if (newCenterMap) {
+    this.setURL(28.13598034627975,-15.436172595513227)
+    this.setState({myLoc: false})
+   } else {
+    this.setState({myLoc: true})
+    this.props.navigation.push('Home')
+   }
+   await new AsyncStorage.setItem("myLoc", JSON.stringify(!newCenterMap))
+ }
+
+ setLocationIcon() {
+   if (this.state.myLoc) {
+      return <Icon
+        name='map-marker'
+        type='font-awesome'
+        color='#FFFFFF'
+        size={30}
+        onPress={this.goHome}
+      />;
+    } 
+    return <Icon
+    name='map'
+    type='font-awesome'
+    color='#FFFFFF'
+    size={25}
+    onPress={this.goHome}
+  />;
  }
   
   handleBackButton = ()=>{
@@ -790,11 +929,6 @@ class HomeScreen extends Component {
       return true;
     }
     return true;
-  }
-
-  centerMap = () => {
-    this.setState({centerMap: true})
-    this.setURL(28.13598034627975,-15.436172595513227)
   }
 
   showHeader = () => {
@@ -812,6 +946,33 @@ class HomeScreen extends Component {
     this.props.navigation.push('Offers')
   }
 
+  enterInGuanarteme = () => {
+    this.setLocation()
+    this.goHome()
+  }
+
+  searchInMap = async () => {
+    this.setState({ showSearchInput: !this.state.showSearchInput})
+  }
+
+  searchMap = () => {
+    // call to asp with data
+    alert(this.state.mapData)
+    this.setState({ mapData: ""}) 
+  }
+
+  showSearchInput() {
+    if (this.state.showSearchInput) {
+      return  <View style={styles.searchBack}>
+        <TextInput value={this.state.mapData} placeholder="Empresa o producto" style ={{ alignSelf: 'center', textAlign: 'center', fontSize: 17 }} onChangeText={(mapData) => this.setState({mapData})}  />
+      <TouchableOpacity onPress={this.searchMap}>
+      <Text style={styles.searchButton}>Buscar</Text>
+      </TouchableOpacity> 
+      </View>
+    }
+    return null;
+  }
+
   render(){
       if (this.state.noGeo) {
         return (
@@ -821,7 +982,9 @@ class HomeScreen extends Component {
             style={{ width: 100, height: 100, alignSelf: "center", marginBottom:20 }}
           />
           <Text style={styles.mainHeaderGPS}>Active su GPS</Text>
-          <Text style={styles.mainHeaderGPS}>Entre en Guanarteme</Text>
+          <TouchableOpacity onPress={this.enterInGuanarteme}>
+              <Text style={styles.enterGuanarteme}>Activado. Entrar en Guanarteme</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.navBar}>
             <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
@@ -829,46 +992,38 @@ class HomeScreen extends Component {
             </TouchableOpacity>
             <Icon
               name='tag'
-              type='evilicon'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
               color='#FFFFFF'
               size={30}
               onPress={this.goOffers}
             />
             <Icon
               name='tag'
-              type='evilicon'
+              type='font-awesome'
               color='#1A5276'
-              size={30}
-            />
-           <Icon
-              name='location'
-              type='evilicon'
-              color='#FFFFFF'
-              size={30}
-              onPress={this.goHome}
-            /> 
-            <Icon
-              name='tag'
-              type='evilicon'
-              color='#1A5276'
-              size={30}
-            />      
-            <Icon
-              name='pointer'
-              type='evilicon'
-              color='#FFFFFF'
-              size={35}
-              onPress={this.centerMap}
+              size={10}
             />
             <Icon
               name='tag'
-              type='evilicon'
+              type='font-awesome'
               color='#1A5276'
               size={30}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
             />
             <Icon
               name='help'
-              type='evilicon'
+              type='font-awesome'
               color='#FFFFFF'
               size={30}
               onPress={this.goHelp}
@@ -880,6 +1035,7 @@ class HomeScreen extends Component {
         return(
           <View style={{flex: 1}}>
             {this.showHeader()}
+            {this.showSearchInput()}
             <WebView
               ref={(webView) => { this.webView.ref = webView; }}
               originWhitelist={['*']}
@@ -930,49 +1086,79 @@ class HomeScreen extends Component {
             </TouchableOpacity>
             <Icon
               name='tag'
-              type='evilicon'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
               color='#FFFFFF'
               size={30}
               onPress={this.goOffers}
             />
             <Icon
               name='tag'
-              type='evilicon'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
               color='#1A5276'
               size={30}
             />
            <Icon
-              name='location'
-              type='evilicon'
-              color='#FFFFFF'
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            {this.setLocationIcon()}
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
               size={30}
-              onPress={this.goHome}
             />
             <Icon
               name='tag'
-              type='evilicon'
+              type='font-awesome'
               color='#1A5276'
-              size={30}
-            />      
-            <Icon
-              name='pointer'
-              type='evilicon'
-              color='#FFFFFF'
-              size={35}
-              onPress={this.centerMap}
+              size={10}
             />
             <Icon
               name='tag'
-              type='evilicon'
+              type='font-awesome'
               color='#1A5276'
-              size={30}
+              size={10}
             />
             <Icon
               name='help'
-              type='evilicon'
+              type='font-awesome'
               color='#FFFFFF'
               size={30}
               onPress={this.goHelp}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='search'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={25}
+              onPress={this.searchInMap}
             />
             </View>
         </View>
@@ -1132,5 +1318,22 @@ const styles = StyleSheet.create({
     fontSize: 25,
     alignSelf: "center",
     paddingTop: 20
+  },
+  enterGuanarteme: {
+    color: '#27AE60',
+    fontWeight: 'bold',
+    fontSize: 22,
+    alignSelf: "center",
+    paddingTop: 20
+  },
+  searchButton: {
+    fontSize: 15,
+    color: "#1A5276",
+    fontWeight: "bold",
+    alignSelf: "center",
+    paddingBottom: 10
+  },
+  searchBack: {
+    backgroundColor: '#fff'
   }
 });
