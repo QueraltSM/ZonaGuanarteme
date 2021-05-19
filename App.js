@@ -69,7 +69,7 @@ class OffersScreen extends Component {
   async init() {
     await AsyncStorage.getItem("myLoc").then((value) => {
       if (value == null) {
-        value = false
+        value = true
       }
       this.setState({ myLoc: JSON.parse(value) })
     })
@@ -254,7 +254,7 @@ class HelpScreen extends Component {
   async init() {
     await AsyncStorage.getItem("myLoc").then((value) => {
       if (value == null) {
-        value = false
+        value = true
       }
       this.setState({ myLoc: JSON.parse(value) })
     })
@@ -428,7 +428,7 @@ class SOSScreen extends Component {
   async init() {
     await AsyncStorage.getItem("myLoc").then((value) => {
       if (value == null) {
-        value = false
+        value = true
       }
       this.setState({ myLoc: JSON.parse(value) })
     })
@@ -641,7 +641,6 @@ class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.init()
-    this.setLocation();
     this.getCompanies();
     this.getSOS();
     this.getOfertas();
@@ -662,11 +661,12 @@ class HomeScreen extends Component {
     })
     await AsyncStorage.getItem("myLoc").then((value) => {
       if (value == null) {
-        value = false
+        value = true
       }
       this.setState({ myLoc: JSON.parse(value) })
     })
     this.setLocationIcon()
+    this.setLocation()
   }
 
   async saveId(key, value) {
@@ -861,7 +861,6 @@ class HomeScreen extends Component {
     this._isMounted = true
     this.setState({ companies: [] })
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    this.setLocation()
     this.configNotifications()
   }
 
@@ -955,16 +954,16 @@ class HomeScreen extends Component {
     this.setState({ showSearchInput: !this.state.showSearchInput})
   }
 
-  searchMap = () => {
-    // call to asp with data
-    alert(this.state.mapData)
+  searchMap = async () => {
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng + "&movil=si&empresa="+this.state.mapData })
     this.setState({ mapData: ""}) 
+    this.setState({ showSearchInput: false }) 
   }
 
   showSearchInput() {
     if (this.state.showSearchInput) {
       return  <View style={styles.searchBack}>
-        <TextInput value={this.state.mapData} placeholder="Empresa o producto" style ={{ alignSelf: 'center', textAlign: 'center', fontSize: 17 }} onChangeText={(mapData) => this.setState({mapData})}  />
+        <TextInput value={this.state.mapData} placeholder="Buscar por empresa" style ={{ alignSelf: 'center', textAlign: 'center', fontSize: 17 }} onChangeText={(mapData) => this.setState({mapData})}  />
       <TouchableOpacity onPress={this.searchMap}>
       <Text style={styles.searchButton}>Buscar</Text>
       </TouchableOpacity> 
@@ -1135,11 +1134,11 @@ class HomeScreen extends Component {
               size={10}
             />
             <Icon
-              name='help'
+              name='search'
               type='font-awesome'
               color='#FFFFFF'
-              size={30}
-              onPress={this.goHelp}
+              size={25}
+              onPress={this.searchInMap}
             />
             <Icon
               name='tag'
@@ -1154,11 +1153,11 @@ class HomeScreen extends Component {
               size={10}
             />
             <Icon
-              name='search'
+              name='help'
               type='font-awesome'
               color='#FFFFFF'
-              size={25}
-              onPress={this.searchInMap}
+              size={30}
+              onPress={this.goHelp}
             />
             </View>
         </View>
