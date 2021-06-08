@@ -872,21 +872,23 @@ class HomeScreen extends Component {
     this.setState({ url: this.map + "?idm="+this.idm+"&lat="+lat+ "&lng="+lng + "&movil=si" })
   }
 
-  async setLocation () {
+  async setLocation() {
     this.setState({ noGeo: false })
     if (this.state.centerMap) {
+      alert("entro")
       this.setURL(28.13598034627975,-15.436172595513227)
+    } else {
+      Geolocation.getCurrentPosition(
+        (info) => {
+        this.setURL(info.coords.latitude, info.coords.longitude)
+      }, (error) => {
+        if (error.code == 2) {
+          this.setState({ noGeo: true })
+        }
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 1000 }
+      );
     }
-    Geolocation.getCurrentPosition(
-      (info) => {
-      this.setURL(info.coords.latitude, info.coords.longitude)
-    }, (error) => {
-      if (error.code == 2) {
-        this.setState({ noGeo: true })
-      }
-    },
-    { enableHighAccuracy: false, timeout: 10000, maximumAge: 1000 }
-    );
   }
 
  goHome = async () => {
