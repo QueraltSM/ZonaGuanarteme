@@ -105,21 +105,13 @@ class OffersScreen extends Component {
 
   setLocationIcon() {
     if (this.state.myLoc) {
-       return <Icon
-         name='map-marker'
-         type='font-awesome'
-         color='#FFFFFF'
-         size={30}
-         onPress={this.setLocation}
-       />;
+       return <TouchableOpacity onPress={this.setLocation}>
+       <Image source={require('./locationOn.png')} />
+     </TouchableOpacity>;
      } 
-     return <Icon
-     name='map'
-     type='font-awesome'
-     color='#FFFFFF'
-     size={25}
-     onPress={this.setLocation}
-   />;
+     return <TouchableOpacity onPress={this.setLocation}>
+         <Image source={require('./locationOff.png')} />
+       </TouchableOpacity>;
   }
 
   render(){
@@ -222,10 +214,10 @@ class OffersScreen extends Component {
               size={10}
             />
             <Icon
-              name='help'
+              name='info'
               type='font-awesome'
               color='#FFFFFF'
-              size={30}
+              size={32}
               onPress={this.goHelp}
             />
             </View>
@@ -290,21 +282,13 @@ class HelpScreen extends Component {
 
   setLocationIcon() {
     if (this.state.myLoc) {
-       return <Icon
-         name='map-marker'
-         type='font-awesome'
-         color='#FFFFFF'
-         size={30}
-         onPress={this.setLocation}
-       />;
+       return <TouchableOpacity onPress={this.setLocation}>
+       <Image source={require('./locationOn.png')} />
+     </TouchableOpacity>;
      } 
-     return <Icon
-     name='map'
-     type='font-awesome'
-     color='#FFFFFF'
-     size={25}
-     onPress={this.setLocation}
-   />;
+     return <TouchableOpacity onPress={this.setLocation}>
+         <Image source={require('./locationOff.png')} />
+       </TouchableOpacity>;
   }
 
   render(){
@@ -395,10 +379,10 @@ class HelpScreen extends Component {
               size={10}
             />
             <Icon
-              name='help'
+              name='info'
               type='font-awesome'
               color='#FFFFFF'
-              size={30}
+              size={32}
               onPress={this.goHelp}
             />
             </View>
@@ -468,21 +452,13 @@ class SOSScreen extends Component {
 
   setLocationIcon() {
     if (this.state.myLoc) {
-       return <Icon
-         name='map-marker'
-         type='font-awesome'
-         color='#FFFFFF'
-         size={30}
-         onPress={this.setLocation}
-       />;
+       return <TouchableOpacity onPress={this.setLocation}>
+       <Image source={require('./locationOn.png')} />
+     </TouchableOpacity>;
      } 
-     return <Icon
-     name='map'
-     type='font-awesome'
-     color='#FFFFFF'
-     size={25}
-     onPress={this.setLocation}
-   />;
+     return <TouchableOpacity onPress={this.setLocation}>
+         <Image source={require('./locationOff.png')} />
+       </TouchableOpacity>;
   }
 
   render(){
@@ -585,10 +561,10 @@ class SOSScreen extends Component {
               size={10}
             />
             <Icon
-              name='help'
+              name='info'
               type='font-awesome'
               color='#FFFFFF'
-              size={30}
+              size={32}
               onPress={this.goHelp}
             />
             </View>
@@ -649,7 +625,7 @@ class HomeScreen extends Component {
       this.getOfertas();
       this.getSugerencias();
       this.notifyProximity();
-    }, 60000);
+    }, 600000);
   }
 
   async init() {
@@ -868,19 +844,18 @@ class HomeScreen extends Component {
     this.props.navigation.push('SOS')
   }
 
-  setURL(lat, lng) {
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+lat+ "&lng="+lng + "&movil=si" })
+  setURL(lat, lng, locCenter) {
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+lat+ "&lng="+lng + "&movil=si&locCenter="+locCenter })
   }
 
   async setLocation() {
     this.setState({ noGeo: false })
     if (this.state.centerMap) {
-      alert("entro")
-      this.setURL(28.13598034627975,-15.436172595513227)
+      this.setURL(28.13598034627975,-15.436172595513227, true)
     } else {
       Geolocation.getCurrentPosition(
         (info) => {
-        this.setURL(info.coords.latitude, info.coords.longitude)
+        this.setURL(info.coords.latitude, info.coords.longitude, false)
       }, (error) => {
         if (error.code == 2) {
           this.setState({ noGeo: true })
@@ -907,21 +882,13 @@ class HomeScreen extends Component {
 
  setLocationIcon() {
    if (this.state.myLoc) {
-      return <Icon
-        name='map-marker'
-        type='font-awesome'
-        color='#FFFFFF'
-        size={30}
-        onPress={this.goHome}
-      />;
+      return <TouchableOpacity onPress={this.goHome}>
+      <Image source={require('./locationOn.png')} />
+    </TouchableOpacity>;
     } 
-    return <Icon
-    name='map'
-    type='font-awesome'
-    color='#FFFFFF'
-    size={25}
-    onPress={this.goHome}
-  />;
+    return <TouchableOpacity onPress={this.goHome}>
+        <Image source={require('./locationOff.png')} />
+      </TouchableOpacity>;
  }
   
   handleBackButton = ()=>{
@@ -934,7 +901,7 @@ class HomeScreen extends Component {
 
   showHeader = () => {
     if (this.state.centerMap) {
-      return <View style={styles.navBar}><Text style={styles.navBarHeader}>Zona Guanarteme Centro</Text></View>
+      return <View style={styles.navBar}><Text style={styles.navBarHeader}>Zona Guanarteme centro</Text></View>
     } 
     return <View style={styles.navBar}><Text style={styles.navBarHeader}>Mi ubicación</Text></View>
   }
@@ -965,7 +932,7 @@ class HomeScreen extends Component {
   showSearchInput() {
     if (this.state.showSearchInput) {
       return  <View style={styles.searchBack}>
-        <TextInput value={this.state.mapData} placeholder="Buscar por empresa" style ={{ alignSelf: 'center', textAlign: 'center', fontSize: 17 }} onChangeText={(mapData) => this.setState({mapData})}  />
+        <TextInput value={this.state.mapData} placeholder="Buscar por calle, empresa o categoría" style ={{ alignSelf: 'center', textAlign: 'center', fontSize: 17 }} onChangeText={(mapData) => this.setState({mapData})}  />
       <TouchableOpacity onPress={this.searchMap}>
       <Text style={styles.searchButton}>Buscar</Text>
       </TouchableOpacity> 
@@ -1023,10 +990,10 @@ class HomeScreen extends Component {
               size={10}
             />
             <Icon
-              name='help'
+              name='info'
               type='font-awesome'
               color='#FFFFFF'
-              size={30}
+              size={32}
               onPress={this.goHelp}
             />
             </View>
@@ -1067,8 +1034,9 @@ class HomeScreen extends Component {
               }}
               renderLoading={() => 
                 <View style={styles.loading}>
-                <ActivityIndicator color={'white'} size="large"/>
-              </View>}
+                  <ActivityIndicator color={'white'} size="large" />
+              </View>
+              }
               onError={(x) => console.log('Oh no!', x)}
                     renderError={() => {
                         return (
@@ -1155,10 +1123,16 @@ class HomeScreen extends Component {
               size={10}
             />
             <Icon
-              name='help'
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='info'
               type='font-awesome'
               color='#FFFFFF'
-              size={30}
+              size={32}
               onPress={this.goHelp}
             />
             </View>
@@ -1313,6 +1287,12 @@ const styles = StyleSheet.create({
     fontSize: 25,
     alignSelf: "center"
   },
+  loadingMapa: {
+    color: '#1A5276',
+    fontWeight: 'bold',
+    fontSize: 25,
+    alignSelf: "center"
+  },
   mainHeaderGPS: {
     color: '#FFFFFF',
     fontWeight: 'bold',
@@ -1323,7 +1303,7 @@ const styles = StyleSheet.create({
   enterGuanarteme: {
     color: '#27AE60',
     fontWeight: 'bold',
-    fontSize: 22,
+    fontSize: 20,
     alignSelf: "center",
     paddingTop: 20
   },
