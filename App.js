@@ -50,7 +50,6 @@ class MainScreen extends Component {
 }
 
 class OffersScreen extends Component { 
-
   WEBVIEW_REF = "offers"
   webView = {
     canGoBack: false,
@@ -102,6 +101,11 @@ class OffersScreen extends Component {
   goOffers = () => {
     this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp" })
   }
+
+  listAll = () => {
+    this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp?action=listAll" })
+  }
+
 
   setLocationIcon() {
     if (this.state.myLoc) {
@@ -158,7 +162,7 @@ class OffersScreen extends Component {
                     <Text>Compruebe su conexión a Internet</Text>
                   </View>);
           }}
-        />
+          />
            <View style={styles.navBar}>
             <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
               <Text style={styles.navBarHeader}>SOS</Text>
@@ -169,32 +173,19 @@ class OffersScreen extends Component {
               color='#1A5276'
               size={10}
             />
-            <Icon
-              name='tag'
-              type='font-awesome'
-              color='#FFFFFF'
-              size={30}
-              onPress={this.goOffers}
-            />
-            <Icon
-              name='tag'
-              type='font-awesome'
-              color='#1A5276'
-              size={10}
-            />
-            <Icon
-              name='tag'
-              type='font-awesome'
-              color='#1A5276'
-              size={30}
-            />
            <Icon
               name='tag'
               type='font-awesome'
               color='#1A5276'
               size={10}
             />
-            {this.setLocationIcon()}
+            <Icon
+              name='home'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={32}
+              onPress={this.setLocation}
+            />
             <Icon
               name='tag'
               type='font-awesome'
@@ -214,11 +205,11 @@ class OffersScreen extends Component {
               size={10}
             />
             <Icon
-              name='info'
+              name='list'
               type='font-awesome'
               color='#FFFFFF'
               size={32}
-              onPress={this.goHelp}
+              onPress={this.listAll}
             />
             </View>
     </View>
@@ -450,15 +441,8 @@ class SOSScreen extends Component {
     this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
   }
 
-  setLocationIcon() {
-    if (this.state.myLoc) {
-       return <TouchableOpacity onPress={this.setLocation}>
-       <Image source={require('./locationOn.png')} />
-     </TouchableOpacity>;
-     } 
-     return <TouchableOpacity onPress={this.setLocation}>
-         <Image source={require('./locationOff.png')} />
-       </TouchableOpacity>;
+  listAll = () => {
+    this.setState({ url: "https://admin.dicloud.es/zca/sos/index.asp?action=listall" })
   }
 
   render(){
@@ -507,9 +491,25 @@ class SOSScreen extends Component {
           }}
         />
            <View style={styles.navBar}>
-            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-              <Text style={styles.navBarHeader}>SOS</Text>
-            </TouchableOpacity>
+           <Icon
+              name='list'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.listAll}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
             <Icon
               name='tag'
               type='font-awesome'
@@ -541,7 +541,13 @@ class SOSScreen extends Component {
               color='#1A5276'
               size={10}
             />
-            {this.setLocationIcon()}
+            <Icon
+              name='home'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.setLocation}
+            />
             <Icon
               name='tag'
               type='font-awesome'
@@ -561,11 +567,11 @@ class SOSScreen extends Component {
               size={10}
             />
             <Icon
-              name='info'
+              name='plus'
               type='font-awesome'
               color='#FFFFFF'
               size={32}
-              onPress={this.goHelp}
+              onPress={this.addSOS}
             />
             </View>
     </View>
@@ -901,7 +907,7 @@ class HomeScreen extends Component {
 
   showHeader = () => {
     if (this.state.centerMap) {
-      return <View style={styles.navBar}><Text style={styles.navBarHeader}>Zona Guanarteme centro</Text></View>
+      return <View style={styles.navBar}><Text style={styles.navBarHeader}>Centro de Guanarteme</Text></View>
     } 
     return <View style={styles.navBar}><Text style={styles.navBarHeader}>Mi ubicación</Text></View>
   }
@@ -924,7 +930,7 @@ class HomeScreen extends Component {
   }
 
   searchMap = async () => {
-    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng + "&movil=si&empresa="+this.state.mapData })
+    this.setState({ url: this.map + "?idm="+this.idm+"&lat="+this.lat+ "&lng="+this.lng + "&movil=si&buscador="+this.state.mapData })
     this.setState({ mapData: ""}) 
     this.setState({ showSearchInput: false }) 
   }
@@ -942,16 +948,14 @@ class HomeScreen extends Component {
   }
 
   render(){
-      if (this.state.noGeo) {
+      if (this.state.noGeo && !this.state.centerMap) {
         return (
         <View style={{flex: 1}}>
         <View style={styles.mainView}>
-          <Image source={require('./logoZG.png')}
-            style={{ width: 100, height: 100, alignSelf: "center", marginBottom:20 }}
-          />
-          <Text style={styles.mainHeaderGPS}>Active su GPS</Text>
+          <Text style={styles.mainHeaderGPS}>Para acceder a su ubicación</Text>
+          <Text style={styles.mainHeaderGPS}>activar  GPS</Text>
           <TouchableOpacity onPress={this.enterInGuanarteme}>
-              <Text style={styles.enterGuanarteme}>Activado. Entrar en Guanarteme</Text>
+              <Text style={styles.enterGuanarteme}>Haga click aquí para entrar</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.navBar}>
@@ -977,6 +981,25 @@ class HomeScreen extends Component {
               color='#1A5276'
               size={10}
             />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            {this.setLocationIcon()}
             <Icon
               name='tag'
               type='font-awesome'
@@ -1296,16 +1319,15 @@ const styles = StyleSheet.create({
   mainHeaderGPS: {
     color: '#FFFFFF',
     fontWeight: 'bold',
-    fontSize: 25,
-    alignSelf: "center",
-    paddingTop: 20
+    fontSize: 20,
+    alignSelf: "center"
   },
   enterGuanarteme: {
     color: '#27AE60',
     fontWeight: 'bold',
     fontSize: 20,
     alignSelf: "center",
-    paddingTop: 20
+    paddingTop: 30
   },
   searchButton: {
     fontSize: 15,
