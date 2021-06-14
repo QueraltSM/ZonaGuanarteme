@@ -1,17 +1,19 @@
-import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, TextInput, ActivityIndicator } from 'react-native';
+import React, { Component, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, Text, Linking, Image, TextInput, ActivityIndicator, Pressable } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { WebView } from 'react-native-webview';
 import { BackHandler } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
-import { Icon } from 'react-native-elements'
+import { Icon, withTheme } from 'react-native-elements'
 import NotificationService from './NotificationService';
 import BackgroundTask from 'react-native-background-task'
 import BackgroundFetch from 'react-native-background-fetch';
 import PushNotification from 'react-native-push-notification';
 import AsyncStorage from '@react-native-community/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import DatePicker from 'react-native-date-picker'
+
 
 class MainScreen extends Component { 
 
@@ -72,6 +74,12 @@ class OffersScreen extends Component {
       }
       this.setState({ myLoc: JSON.parse(value) })
     })
+    await AsyncStorage.getItem("ofertasAction").then((value) => {
+      if (value == null) {
+        value = true
+      }
+      this.setState({ ofertasAction: JSON.parse(value) })
+    })
   }
 
   componentDidMount(){
@@ -102,8 +110,16 @@ class OffersScreen extends Component {
     this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp" })
   }
 
-  listAll = () => {
-    this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp?action=listAll" })
+  listAll = async () => {
+    var action = ""
+    var value = false
+    if (this.state.ofertasAction) {
+      action = "?action=listAll"
+      value = true
+    }
+    this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp" + action })
+    await AsyncStorage.setItem("ofertasAction",  JSON.stringify(!value));
+    this.setState({"ofertasAction": !value})
   }
 
 
@@ -164,16 +180,38 @@ class OffersScreen extends Component {
           }}
           />
            <View style={styles.navBar}>
-            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-              <Text style={styles.navBarHeader}>SOS</Text>
-            </TouchableOpacity>
+            <Icon
+              name='list'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={32}
+              onPress={this.listAll}
+            />
             <Icon
               name='tag'
               type='font-awesome'
               color='#1A5276'
               size={10}
             />
-           <Icon
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
               name='tag'
               type='font-awesome'
               color='#1A5276'
@@ -205,11 +243,11 @@ class OffersScreen extends Component {
               size={10}
             />
             <Icon
-              name='list'
+              name='exclamation-triangle'
               type='font-awesome'
               color='#FFFFFF'
-              size={32}
-              onPress={this.listAll}
+              size={30}
+              onPress={this.goSOS}
             />
             </View>
     </View>
@@ -316,9 +354,37 @@ class HelpScreen extends Component {
           }}
         />
            <View style={styles.navBar}>
-            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-              <Text style={styles.navBarHeader}>SOS</Text>
-            </TouchableOpacity>
+           <Icon
+              name='exclamation-triangle'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goSOS}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
             <Icon
               name='tag'
               type='font-awesome'
@@ -392,8 +458,16 @@ class SOSScreen extends Component {
   }
   state = {
     url: "https://admin.dicloud.es/zca/sos/index.asp",
-    myLoc: false
+    myLoc: false,
+    date: "09-10-2020",
+    datePicker1: false,
+    datePicker2: false,
+    showSearchForm: false,
+    sosAction: true
   }
+
+  beginDate = new Date()
+  endDate = new Date()
 
   constructor(props) {
     super(props); 
@@ -441,16 +515,98 @@ class SOSScreen extends Component {
     this.setState({ url: "https://admin.dicloud.es/zca/sos/nuevomensa.asp" })
   }
 
-  listAll = () => {
-    this.setState({ url: "https://admin.dicloud.es/zca/sos/index.asp?action=listall" })
+  listAll = async () => {
+    var action = ""
+    var value = false
+    if (this.state.sosAction) {
+      action = "?action=listAll"
+      value = true
+    }
+    this.setState({url: "https://admin.dicloud.es/zca/sos/index.asp" + action })
+    await AsyncStorage.setItem("sosAction",  JSON.stringify(!value));
+    this.setState({"sosAction": !value})
+  }
+
+  startEndDate = () => {
+    this.setState({datePicker2: !this.state.datePicker2})
+  }
+
+  startBeginDate = () => {
+    this.setState({datePicker1: !this.state.datePicker1})
+  }
+
+  setEndDate = (date) => {
+    var selectedDate = new Date(date)
+    this.setState({endDate: ("0" + (selectedDate.getDate())).slice(-2)+ "/"+ ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "/" + selectedDate.getFullYear()})
+  }
+
+  setBeginDate = (date) => {
+    var selectedDate = new Date(date)
+    this.setState({beginDate: ("0" + (selectedDate.getDate())).slice(-2)+ "/"+ ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "/" + selectedDate.getFullYear()})
+  }
+
+  showSearch = () => {
+    this.setState({ showSearchForm: !this.state.showSearchForm })
   }
 
   render(){
     return(
       <View style={{flex: 1}}>
         <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>Emergencias</Text>
+        {!this.state.sosAction &&<Text style={styles.navBarHeader}>Historial de emergencias</Text>}
+        {this.state.sosAction &&<Text style={styles.navBarHeader}>Emergencias de hoy</Text>}
         </View>
+        {this.state.showSearchForm && (<View style={styles.searchBack}>
+          {this.state.datePicker1 && 
+          <View>
+            <DatePicker
+              style={styles.datePickerStyle}
+              date = {this.beginDate}
+              mode="date"
+              placeholder="select date"
+              format="DD-MM-YYYY"
+              onDateChange={(date) => this.setBeginDate(date)}
+          />
+          <TouchableOpacity onPress={this.startBeginDate}>
+            <Text style={styles.searchButton}>Guardar fecha</Text>
+          </TouchableOpacity> 
+          </View>
+        }
+        {this.state.datePicker2 && 
+          <View>
+            <DatePicker
+              style={styles.datePickerStyle}
+              date = {this.endDate}
+              mode="date"
+              placeholder="select date"
+              format="DD-MM-YYYY"
+              onDateChange={(date) => this.setEndDate(date)}
+          />
+          <TouchableOpacity onPress={this.startEndDate}>
+            <Text style={styles.searchButton}>Guardar fecha</Text>
+          </TouchableOpacity> 
+          </View>
+        }
+        {!this.state.datePicker1 &&
+          <TouchableOpacity onPress={this.startBeginDate}>
+          <Text style={styles.formBox}>Buscar desde {this.state.beginDate}</Text>
+        </TouchableOpacity>  
+        }
+        {!this.state.datePicker2 &&
+          <TouchableOpacity onPress={this.startEndDate}>
+          <Text style={styles.formBox}>Buscar hasta {this.state.endDate}</Text>
+        </TouchableOpacity>  
+        }
+        <TextInput  
+              style = { styles.formBox }
+              placeholder="Buscar por palabra"  
+              onChangeText={(alias) => this.setState({alias})}  
+              value={this.state.alias}
+            /> 
+            <TouchableOpacity onPress={this.searchMap}>
+              <Text style={styles.searchButton}>Buscar</Text>
+            </TouchableOpacity>  
+        </View>)}
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
           originWhitelist={['*']}
@@ -572,6 +728,31 @@ class SOSScreen extends Component {
               color='#FFFFFF'
               size={32}
               onPress={this.addSOS}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='search'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={32}
+              onPress={this.showSearch}
             />
             </View>
     </View>
@@ -1073,9 +1254,37 @@ class HomeScreen extends Component {
                     }}
             />
            <View style={styles.navBar}>
-            <TouchableOpacity onPress={this.goSOS} style={styles.navBarButton}>
-              <Text style={styles.navBarHeader}>SOS</Text>
-            </TouchableOpacity>
+           <Icon
+              name='exclamation-triangle'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.goSOS}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
             <Icon
               name='tag'
               type='font-awesome'
@@ -1262,6 +1471,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     textAlign: "center"
   },
+  formBox: {
+    fontSize: 15,
+    textAlign: "center",
+    paddingTop: 13
+  },
   visibilityBtn:{
     position: 'absolute',
     right: 20,
@@ -1334,9 +1548,13 @@ const styles = StyleSheet.create({
     color: "#1A5276",
     fontWeight: "bold",
     alignSelf: "center",
-    paddingBottom: 10
+    paddingTop: 13,
+    paddingBottom: 2
   },
   searchBack: {
     backgroundColor: '#fff'
+  },
+  datePickerStyle: {
+    backgroundColor:"#fff",
   }
 });
