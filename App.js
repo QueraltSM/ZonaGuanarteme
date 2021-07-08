@@ -59,8 +59,17 @@ class OffersScreen extends Component {
   }
   state = {
     url: "https://admin.dicloud.es/zca/ofertas/index.asp",
-    myLoc: false
+    myLoc: false,
+    ofertasAction: true,
+    datePicker1: false,
+    datePicker2: false,
+    showSearchForm: false,
+    ofertasAction: true,
+    ofertasKeyword: ""
   }
+
+  beginDate = new Date()
+  endDate = new Date()
 
   constructor(props) {
     super(props);
@@ -73,12 +82,6 @@ class OffersScreen extends Component {
         value = true
       }
       this.setState({ myLoc: JSON.parse(value) })
-    })
-    await AsyncStorage.getItem("ofertasAction").then((value) => {
-      if (value == null) {
-        value = true
-      }
-      this.setState({ ofertasAction: JSON.parse(value) })
     })
   }
 
@@ -122,6 +125,59 @@ class OffersScreen extends Component {
     this.setState({"ofertasAction": !value})
   }
 
+  startEndDate = () => {
+    if (this.state.endDate == undefined) {
+      this.setState({endDate: ("0" + (new Date().getDate())).slice(-2)+ "-"+ ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear()})
+    }
+    this.setState({datePicker2: !this.state.datePicker2})
+  }
+
+  startBeginDate = () => {
+    if (this.state.beginDate == undefined) {
+      this.setState({beginDate: ("0" + (new Date().getDate())).slice(-2)+ "-"+ ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear()})
+    }
+    this.setState({datePicker1: !this.state.datePicker1})
+  }
+
+  setEndDate = (date) => {
+    var selectedDate = new Date(date)
+    this.setState({endDate: ("0" + (selectedDate.getDate())).slice(-2)+ "-"+ ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "-" + selectedDate.getFullYear()})
+  }
+
+  setBeginDate = (date) => {
+    var selectedDate = new Date(date)
+    this.setState({beginDate: ("0" + (selectedDate.getDate())).slice(-2)+ "-"+ ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "-" + selectedDate.getFullYear()})
+  }
+
+  showSearch = () => {
+    if (!this.state.url.includes("nuevomensa.asp")) {
+      this.setState({ showSearchForm: !this.state.showSearchForm })
+    }
+  }
+
+  searchOfertas = () => {
+    var action = ""
+    if (this.state.ofertasKeyword != "") {
+      action += "keyword="+this.state.ofertasKeyword
+    }
+    if (this.state.beginDate != "" && this.state.beginDate != undefined ) {
+      if (action != "") action += "&"
+      action += "datebegin="+this.state.beginDate
+    }
+    if (this.state.endDate != "" && this.state.endDate != undefined ) {
+      if (action != "") action += "&"
+      action += "dateend="+this.state.endDate
+    }
+    if (!this.state.sosAction) {
+      if (action != "") action += "&"
+      action += "action=listAll"
+    }
+    this.setState({url: "https://admin.dicloud.es/zca/ofertas/index.asp?" + action })
+    this.setState({showSearchForm: false})
+    this.setState({ofertasKeyword: ""})
+    this.setState({beginDate: ""})
+    this.setState({endDate: ""})
+  }
 
   setLocationIcon() {
     if (this.state.myLoc) {
@@ -138,8 +194,60 @@ class OffersScreen extends Component {
     return(
       <View style={{flex: 1}}>
         <View style={styles.navBar}>
-          <Text style={styles.navBarHeader}>Ofertas Flash</Text>
+            {!this.state.ofertasAction && <Text style={styles.navBarHeader}>Historial de ofertas</Text>}
+            {this.state.ofertasAction &&<Text style={styles.navBarHeader}>Ofertas flash de hoy</Text>}
         </View>
+        {this.state.showSearchForm && (<View style={styles.searchBack}>
+          {this.state.datePicker1 && 
+          <View style={styles.viewPicker}>
+            <DatePicker
+              style={styles.datePickerStyle}
+              date = {this.beginDate}
+              mode="date"
+              placeholder="select date"
+              format="DD-MM-YYYY"
+              onDateChange={(date) => this.setBeginDate(date)}
+          />
+          <TouchableOpacity onPress={this.startBeginDate}>
+            <Text style={styles.searchButton}>Guardar desde</Text>
+          </TouchableOpacity> 
+          </View>
+        }
+        {!this.state.datePicker1 &&
+          <TouchableOpacity onPress={this.startBeginDate}>
+          <Text style={styles.formBox}>Desde fecha {this.state.beginDate}</Text>
+        </TouchableOpacity>  
+        }
+        {!this.state.datePicker2 &&
+          <TouchableOpacity onPress={this.startEndDate}>
+          <Text style={styles.formBox}>Hasta fecha {this.state.endDate}</Text>
+        </TouchableOpacity>  
+        }
+        {this.state.datePicker2 && 
+          <View style={styles.viewPicker}>
+            <DatePicker
+              style={styles.datePickerStyle}
+              date = {this.endDate}
+              mode="date"
+              placeholder="select date"
+              format="DD-MM-YYYY"
+              onDateChange={(date) => this.setEndDate(date)}
+          />
+          <TouchableOpacity onPress={this.startEndDate}>
+            <Text style={styles.searchButton}>Guardar hasta</Text>
+          </TouchableOpacity> 
+          </View>
+        }
+        <TextInput  
+              style = { styles.formBox }
+              placeholder="Buscar por palabra"  
+              onChangeText={(keyword) => this.setState({ofertasKeyword: keyword})}  
+              value={this.state.alias}
+            /> 
+            <TouchableOpacity onPress={this.searchOfertas}>
+              <Text style={styles.searchButton}>Buscar</Text>
+            </TouchableOpacity>  
+        </View>)}
         <WebView
           ref={(webView) => { this.webView.ref = webView; }}
           originWhitelist={['*']}
@@ -181,11 +289,11 @@ class OffersScreen extends Component {
           />
            <View style={styles.navBar}>
             <Icon
-              name='list'
+              name='exclamation-triangle'
               type='font-awesome'
               color='#FFFFFF'
-              size={32}
-              onPress={this.listAll}
+              size={30}
+              onPress={this.goSOS}
             />
             <Icon
               name='tag'
@@ -243,11 +351,36 @@ class OffersScreen extends Component {
               size={10}
             />
             <Icon
-              name='exclamation-triangle'
+              name='list'
               type='font-awesome'
               color='#FFFFFF'
+              size={32}
+              onPress={this.listAll}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
               size={30}
-              onPress={this.goSOS}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='search'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={32}
+              onPress={this.showSearch}
             />
             </View>
     </View>
@@ -296,10 +429,6 @@ class HelpScreen extends Component {
   setLocation = async () => {
     this.props.navigation.push('Home')
   }
-
-  goHelp = () => {
-    this.props.navigation.push('Help')
- }
 
   goSOS = () => {
     this.props.navigation.push('SOS')
@@ -391,12 +520,12 @@ class HelpScreen extends Component {
               color='#1A5276'
               size={10}
             />
-            <Icon
-              name='tag'
+             <Icon
+              name='home'
               type='font-awesome'
               color='#FFFFFF'
               size={30}
-              onPress={this.goOffers}
+              onPress={this.setLocation}
             />
             <Icon
               name='tag'
@@ -416,31 +545,12 @@ class HelpScreen extends Component {
               color='#1A5276'
               size={10}
             />
-            {this.setLocationIcon()}
             <Icon
               name='tag'
-              type='font-awesome'
-              color='#1A5276'
-              size={30}
-            />
-            <Icon
-              name='tag'
-              type='font-awesome'
-              color='#1A5276'
-              size={10}
-            />
-            <Icon
-              name='tag'
-              type='font-awesome'
-              color='#1A5276'
-              size={10}
-            />
-            <Icon
-              name='info'
               type='font-awesome'
               color='#FFFFFF'
-              size={32}
-              onPress={this.goHelp}
+              size={30}
+              onPress={this.goOffers}
             />
             </View>
     </View>
@@ -448,9 +558,7 @@ class HelpScreen extends Component {
   }
 }
 
-
 class SOSScreen extends Component { 
-
   WEBVIEW_REF = "sos"
   webView = {
     canGoBack: false,
@@ -463,9 +571,9 @@ class SOSScreen extends Component {
     datePicker1: false,
     datePicker2: false,
     showSearchForm: false,
-    sosAction: true
+    sosAction: true,
+    sosKeyword: ""
   }
-
   beginDate = new Date()
   endDate = new Date()
 
@@ -528,37 +636,70 @@ class SOSScreen extends Component {
   }
 
   startEndDate = () => {
+    if (this.state.endDate == undefined) {
+      this.setState({endDate: ("0" + (new Date().getDate())).slice(-2)+ "-"+ ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear()})
+    }
     this.setState({datePicker2: !this.state.datePicker2})
   }
 
   startBeginDate = () => {
+    if (this.state.beginDate == undefined) {
+      this.setState({beginDate: ("0" + (new Date().getDate())).slice(-2)+ "-"+ ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear()})
+    }
     this.setState({datePicker1: !this.state.datePicker1})
   }
 
   setEndDate = (date) => {
     var selectedDate = new Date(date)
-    this.setState({endDate: ("0" + (selectedDate.getDate())).slice(-2)+ "/"+ ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "/" + selectedDate.getFullYear()})
+    this.setState({endDate: ("0" + (selectedDate.getDate())).slice(-2)+ "-"+ ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "-" + selectedDate.getFullYear()})
   }
 
   setBeginDate = (date) => {
     var selectedDate = new Date(date)
-    this.setState({beginDate: ("0" + (selectedDate.getDate())).slice(-2)+ "/"+ ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "/" + selectedDate.getFullYear()})
+    this.setState({beginDate: ("0" + (selectedDate.getDate())).slice(-2)+ "-"+ ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "-" + selectedDate.getFullYear()})
   }
 
   showSearch = () => {
-    this.setState({ showSearchForm: !this.state.showSearchForm })
+    if (!this.state.url.includes("nuevomensa.asp")) {
+      this.setState({ showSearchForm: !this.state.showSearchForm })
+    }
+  }
+
+  searchSOS = () => {
+    var action = ""
+    if (this.state.sosKeyword != "") {
+      action += "keyword="+this.state.sosKeyword
+    }
+    if (this.state.beginDate != "" && this.state.beginDate != undefined ) {
+      if (action != "") action += "&"
+      action += "datebegin="+this.state.beginDate
+    }
+    if (this.state.endDate != "" && this.state.endDate != undefined ) {
+      if (action != "") action += "&"
+      action += "dateend="+this.state.endDate
+    }
+    if (!this.state.sosAction) {
+      if (action != "") action += "&"
+      action += "action=listAll"
+    }
+    this.setState({url: "https://admin.dicloud.es/zca/sos/index.asp?" + action })
+    this.setState({showSearchForm: false})
+    this.setState({sosKeyword: ""})
+    this.setState({beginDate: ""})
+    this.setState({endDate: ""})
   }
 
   render(){
     return(
       <View style={{flex: 1}}>
         <View style={styles.navBar}>
-        {!this.state.sosAction &&<Text style={styles.navBarHeader}>Historial de emergencias</Text>}
-        {this.state.sosAction &&<Text style={styles.navBarHeader}>Emergencias de hoy</Text>}
+          {!this.state.url.includes("nuevomensa.asp") && !this.state.sosAction &&<Text style={styles.navBarHeader}>Historial de emergencias</Text>}
+          {!this.state.url.includes("nuevomensa.asp") && this.state.sosAction &&<Text style={styles.navBarHeader}>Emergencias de hoy</Text>}
+          {this.state.url.includes("nuevomensa.asp") && <Text style={styles.navBarHeader}>Nueva emergencia</Text>}
         </View>
         {this.state.showSearchForm && (<View style={styles.searchBack}>
           {this.state.datePicker1 && 
-          <View>
+          <View style={styles.viewPicker}>
             <DatePicker
               style={styles.datePickerStyle}
               date = {this.beginDate}
@@ -568,12 +709,22 @@ class SOSScreen extends Component {
               onDateChange={(date) => this.setBeginDate(date)}
           />
           <TouchableOpacity onPress={this.startBeginDate}>
-            <Text style={styles.searchButton}>Guardar fecha</Text>
+            <Text style={styles.searchButton}>Guardar desde</Text>
           </TouchableOpacity> 
           </View>
         }
+        {!this.state.datePicker1 &&
+          <TouchableOpacity onPress={this.startBeginDate}>
+          <Text style={styles.formBox}>Desde fecha {this.state.beginDate}</Text>
+        </TouchableOpacity>  
+        }
+        {!this.state.datePicker2 &&
+          <TouchableOpacity onPress={this.startEndDate}>
+          <Text style={styles.formBox}>Hasta fecha {this.state.endDate}</Text>
+        </TouchableOpacity>  
+        }
         {this.state.datePicker2 && 
-          <View>
+          <View style={styles.viewPicker}>
             <DatePicker
               style={styles.datePickerStyle}
               date = {this.endDate}
@@ -583,27 +734,17 @@ class SOSScreen extends Component {
               onDateChange={(date) => this.setEndDate(date)}
           />
           <TouchableOpacity onPress={this.startEndDate}>
-            <Text style={styles.searchButton}>Guardar fecha</Text>
+            <Text style={styles.searchButton}>Guardar hasta</Text>
           </TouchableOpacity> 
           </View>
-        }
-        {!this.state.datePicker1 &&
-          <TouchableOpacity onPress={this.startBeginDate}>
-          <Text style={styles.formBox}>Buscar desde {this.state.beginDate}</Text>
-        </TouchableOpacity>  
-        }
-        {!this.state.datePicker2 &&
-          <TouchableOpacity onPress={this.startEndDate}>
-          <Text style={styles.formBox}>Buscar hasta {this.state.endDate}</Text>
-        </TouchableOpacity>  
         }
         <TextInput  
               style = { styles.formBox }
               placeholder="Buscar por palabra"  
-              onChangeText={(alias) => this.setState({alias})}  
+              onChangeText={(keyword) => this.setState({sosKeyword: keyword})}  
               value={this.state.alias}
             /> 
-            <TouchableOpacity onPress={this.searchMap}>
+            <TouchableOpacity onPress={this.searchSOS}>
               <Text style={styles.searchButton}>Buscar</Text>
             </TouchableOpacity>  
         </View>)}
@@ -648,36 +789,36 @@ class SOSScreen extends Component {
         />
            <View style={styles.navBar}>
            <Icon
-              name='list'
-              type='font-awesome'
-              color='#FFFFFF'
-              size={30}
-              onPress={this.listAll}
-            />
-            <Icon
-              name='tag'
-              type='font-awesome'
-              color='#1A5276'
-              size={30}
-            />
-            <Icon
-              name='tag'
-              type='font-awesome'
-              color='#1A5276'
-              size={10}
-            />
-            <Icon
-              name='tag'
-              type='font-awesome'
-              color='#1A5276'
-              size={10}
-            />
-            <Icon
               name='tag'
               type='font-awesome'
               color='#FFFFFF'
               size={30}
               onPress={this.goOffers}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={30}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='tag'
+              type='font-awesome'
+              color='#1A5276'
+              size={10}
+            />
+            <Icon
+              name='list'
+              type='font-awesome'
+              color='#FFFFFF'
+              size={30}
+              onPress={this.listAll}
             />
             <Icon
               name='tag'
@@ -1118,7 +1259,7 @@ class HomeScreen extends Component {
 
   showSearchInput() {
     if (this.state.showSearchInput) {
-      return  <View style={styles.searchBack}>
+      return  <View style={styles.searchMapBack}>
         <TextInput value={this.state.mapData} placeholder="Buscar por calle, empresa o categoría" style ={{ alignSelf: 'center', textAlign: 'center', fontSize: 17 }} onChangeText={(mapData) => this.setState({mapData})}  />
       <TouchableOpacity onPress={this.searchMap}>
       <Text style={styles.searchButton}>Buscar</Text>
@@ -1472,9 +1613,11 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   formBox: {
-    fontSize: 15,
+    fontSize: 17,
     textAlign: "center",
-    paddingTop: 13
+    paddingTop: 23,
+    color:"#1A5276",
+    fontWeight: 'bold'
   },
   visibilityBtn:{
     position: 'absolute',
@@ -1545,16 +1688,27 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     fontSize: 15,
-    color: "#1A5276",
+    color: "#922B21",
     fontWeight: "bold",
     alignSelf: "center",
     paddingTop: 13,
-    paddingBottom: 2
+    paddingBottom: 2,
+    textTransform: 'uppercase',
   },
   searchBack: {
-    backgroundColor: '#fff'
+    backgroundColor: "#fff",
+    paddingBottom: 30
+  },
+  searchMapBack: {
+    backgroundColor: "#fff",
   },
   datePickerStyle: {
     backgroundColor:"#fff",
-  }
+    alignSelf: "center",
+    fontSize: 5,
+    color: "#1A5276"
+  },
+  viewPicker: {
+    paddingTop: 20,
+  },
 });
